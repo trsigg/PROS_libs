@@ -1,124 +1,62 @@
-#define numTargets 4
+#include "motorGroup.h"	//also includes vector
+#include "Timer.h"
+#include "API.h"
 
-#include "timer.c"
-
-enum controlType { NONE, BUTTON, JOYSTICK };
-
-typedef struct {
-	tMotor motors[12];
-	int numMotors;
-	controlType controlType; //true if controlled by button, false if by joystick
-	TVexJoysticks posInput, negInput; //inputs. NegInput only assigned if using button control
-	//button control
-	int upPower, downPower, stillSpeed;
-	//execute maneuver
-	int targetPos, endPower, maneuverPower, maneuverTimeout;
-	bool forward, maneuverExecuting; //forward: whether target is forwad from initial group position
-	long maneuverTimer;
-	//joystick control
-	int deadband; //range of motor values around 0 for which motors are not engaged
-	bool isRamped; //whether group is ramped
-	int msPerPowerChange; //if ramping, time between motor power changes, calculated using maxAcc100ms
-	float powMap; //degree of polynomial to which inputs are mapped (1 for linear)
-	float coeff; //factor by which motor powers are multiplied
-	long lastUpdated; //ramping
-	int absMin, absMax; //extreme  positions of motorGroup
-	bool hasAbsMin, hasAbsMax;
-	int maxPowerAtAbs, defPowerAtAbs; //maximum power at absolute position (pushing down from minimum or up from maximum) and default power if this is exceeded
-	//sensors
-	bool hasEncoder, hasPotentiometer;
-	bool encoderReversed, potentiometerReversed;
-	bool potentiometerDefault; //whether potentiometer (as opposed to encoder) is default sensor for position measurements
-	tSensors encoder, potentiometer;
-	//position targets
-	int targets[numTargets];
-	TVexJoysticks targetButtons[numTargets];
-	int targetTimeout, targetPower;
-} motorGroup;
-
-//#region initialization
-void initializeGroup(motorGroup *group, int numMotors, tMotor motor1, tMotor motor2=port1, tMotor motor3=port1, tMotor motor4=port1, tMotor motor5=port1, tMotor motor6=port1, tMotor motor7=port1, tMotor motor8=port1, tMotor motor9=port1, tMotor motor10=port1, tMotor motor11=port1, tMotor motor12=port1) { //look, I know this is stupid.  But arrays in ROBOTC */really/* suck
-	tMotor motors[12] = { motor1, motor2, motor3, motor4, motor5, motor6, motor7, motor8, motor9, motor10, motor11, motor12 };
-	for (int i=0; i<numMotors; i++)
-		group->motors[i] = motors[i];
-
-	for (int i=0; i<numTargets; i++)
-		group->targets[i] = -1;
-
-	group->numMotors = numMotors;
-	group->maneuverExecuting = false;
+//#region constructors
+MotorGroup::MotorGroup(std::vector<unsigned char> motors) : motors(motors) {
+	maneuverTimer = new Timer();
 }
 
-void configureButtonInput(motorGroup *group, TVexJoysticks posBtn, TVexJoysticks negBtn, int stillSpeed=0, int upPower=127, int downPower=-127) {
-	group->controlType = BUTTON;
-	group->posInput = posBtn;
-	group->negInput = negBtn;
-	group->stillSpeed = stillSpeed;
-	group->upPower = upPower;
-	group->downPower = downPower;
+MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder* encoder) : motors(motors), encoder(encoder) {
+	maneuverTimer = new Timer();
 }
 
-void configureJoystickInput(motorGroup *group, TVexJoysticks joystick, int deadband=10, bool isRamped=false, int maxAcc100ms=20, float powMap=1, int maxPow=127) {
-	group->controlType = JOYSTICK;
-	group->posInput = joystick;
-	group->deadband = deadband;
-	group->isRamped = isRamped;
-	group->msPerPowerChange = 100 / maxAcc100ms;
-	group->powMap = powMap;
-	group->coeff = maxPow /  127.0;
-	group->lastUpdated = nPgmTime;
+MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false) : motors(motors), potPort(potPort), potReversed(potReversed) {
+	maneuverTimer = new Timer();
 }
 //#endregion
 
 //#region sensors
-void addSensor(motorGroup *group, tSensors sensor, bool reversed=false, bool setAsDefault=true) {
-	switch (SensorType[sensor]) {
-		case sensorPotentiometer:
-			group->hasPotentiometer = true;
-			group->potentiometer = sensor;
-			group->potentiometerReversed = reversed;
-			if (setAsDefault) group->potentiometerDefault = true;
-			break;
-		case sensorQuadEncoder:
-			group->hasEncoder = true;
-			group->encoder = sensor;
-			group->encoderReversed = reversed;
-			if (setAsDefault) group->potentiometerDefault = false;
-			break;
-	}
+void MotorGroup::addSensor(Encoder* enc, bool setAsDefault) {
+	encoder = enc;
+	if (setAsDefault) potIsDefault = false;
 }
 
-int encoderVal(motorGroup *group) {
-	if (group->hasEncoder) {
-		return (group->encoderReversed ?  -SensorValue[group->encoder] : SensorValue[group->encoder]);
+void MotorGroup::addSensor(unsigned short port, bool reversed, bool setAsDefault) {
+	potPort = port;
+	potReversed = reversed;
+	if (setAsDefault) potIsDefault = true;
+}
+
+int MotorGroup::encoderVal() {
+	if (hasEncoder()) {
+		return encoderGet(encoder);
 	} else {
-		return 0;
+		return 0;	//possible debug location
 	}
 }
 
-int potentiometerVal(motorGroup *group) {
-	if (group->hasPotentiometer) {
-		return (group->potentiometerReversed ? 4096-SensorValue[group->potentiometer] : SensorValue[group->potentiometer]);
+int MotorGroup::potVal() {
+	if (hasPotentiometer()) {
+		return potReversed ? 4095-analogRead(potPort) : analogRead(potPort);
 	} else {
-		return 0;
+		return 0;	//possible debug location
 	}
 }
 
-int getPosition(motorGroup *group) {
-	if (group->hasPotentiometer && group->hasEncoder) {
-		return group->potentiometerDefault ? potentiometerVal(group) : encoderVal(group);
+int MotorGroup::getPosition() {
+	if (hasPotentiometer() && hasEncoder()) {
+		return potIsDefault ? potVal() : encoderVal();
 	} else {
-		return (group->hasEncoder ? encoderVal(group) : potentiometerVal(group));
+		return (hasEncoder() ? encoderVal(group) : potVal(group));
 	}
 }
 
-void resetEncoder(motorGroup *group, int resetVal=0) {
-	SensorValue[group->encoder] = resetVal;
-}
+void MotorGroup::resetEncoder() { encoderReset(encoder); }
 //#endregion
 
 //#region position limiting
-void setAbsMax(motorGroup *group, int max, int defPowerAtAbs=0, int maxPowerAtAbs=20) {
+void setAbsMax(int max, int defPowerAtAbs=0, int maxPowerAtAbs=20) {
 	group->absMax = max;
 	group->hasAbsMax = true;
 	group->maxPowerAtAbs = maxPowerAtAbs;
