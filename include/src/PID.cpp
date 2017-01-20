@@ -4,9 +4,9 @@
 
 double PID::evaluate(double input) {
 	unsigned long elapsed = updateTimer->time();
-	updateTimer->reset();
 
 	if (elapsed > minSampleTime) {
+		updateTimer->reset();
 		double error = target - input;
 		unsigned short timeCorrectionFactor = useTimeAdjustment ? elapsed : 1;
 

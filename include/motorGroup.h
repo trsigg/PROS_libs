@@ -24,13 +24,15 @@ class MotorGroup {
     void addSensor(Encoder* enc, bool setAsDefault=true); //associates a sensor with the group (used by other methods in this section). If setAsDefault is true, potIsDefault is adjusted accordingly
     void addSensor(unsigned char port, bool reversed=false, bool setAsDefault=true);
     int encoderVal();                                         //returns encoder value of associated encoder if attached, 0 otherwise
+    void resetEncoder();                                      //resets associated encoder to 0
     int potVal();                                             //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
     int getPosition();                                        //returns either encoderVal() or potVal() depending on the value of potIsDefault
     //automovement
     void moveTowardPosition(int pos, char power=127);                                                       //moves group toward specified position
     void createManeuver(int position, char endPower=0, char maneuverPower=127, unsigned short timeout=10);  //sets a target position for group to attain
+    void stopManeuver();
     void executeManeuver();                                                                                 //moves group toward target and updates maneuver progress
-    void goToPosition();                                                                                    //moves group to specified position
+    void goToPosition(int pos, char endPower=0, char maneuverPower=127, unsigned short timeout=100);         //moves group to specified position
     //accessors and mutators
       //sensors
     bool isPotReversed();       //returns false if no potentiometer is attached
@@ -49,10 +51,10 @@ class MotorGroup {
     void setAbsolutes(int minPos, int maxPos, char defPowerAtAbs=0, char maxPowerAtAbs=20); //set absMin and absMax simultaneously
     int getAbsMin();
     int getAbsMax();
-    int getDefPowerAtAbs();
-    void setDefPowerAtAbs();
-    int getMaxPowerAtAbs();
-    void setMaxPowerAtAbs();
+    char getDefPowerAtAbs();
+    void setDefPowerAtAbs(char power);
+    char getMaxPowerAtAbs();
+    void setMaxPowerAtAbs(char power);
   private:
     std::vector<unsigned char> motors;  //vector (variable-length array) of motors in group
     //absolutes
