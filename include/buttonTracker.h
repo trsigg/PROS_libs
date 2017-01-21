@@ -8,9 +8,9 @@
 
 class ButtonTracker {
   public:
-    static bool newlyPressed(unsigned char joystick, unsigned char buttonGroup, unsigned char button);
+    static bool newlyPressed(unsigned char buttonGroup, unsigned char button, unsigned char joystick=1);
     /* Returns true if button has been pressed since last call (but was not pressed previously) */
-    static bool isValidButton(unsigned char joystick, unsigned char buttonGroup, unsigned char button);
+    static bool isValidButton(unsigned char buttonGroup, unsigned char button, unsigned char joystick=1);
     /* Returns true if joystick, buttonGroup, and button form a valid button identifier
 
       Checks that joystick <= NUM_JOYSTICKS (defined in config.h) and that buttonGroup
@@ -18,7 +18,7 @@ class ButtonTracker {
   private:
     static bool* pressedButtons[NUM_JOYSTICKS][4][4];
     /* Holds the states of the buttons at last update */
-    static bool* getButtonPtr(unsigned char joystick, unsigned char buttonGroup, unsigned char button);
+    static bool* getButtonPtr(unsigned char buttonGroup, unsigned char button, unsigned char joystick=1);
     /* Returns a pointer to the location in pressedButtons holding the state of the specified button */
 };
 

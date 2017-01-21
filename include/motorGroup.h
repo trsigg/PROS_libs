@@ -23,10 +23,10 @@ class MotorGroup {
     //sensors
     void addSensor(Encoder* enc, bool setAsDefault=true); //associates a sensor with the group (used by other methods in this section). If setAsDefault is true, potIsDefault is adjusted accordingly
     void addSensor(unsigned char port, bool reversed=false, bool setAsDefault=true);
-    int encoderVal();                                         //returns encoder value of associated encoder if attached, 0 otherwise
-    void resetEncoder();                                      //resets associated encoder to 0
-    int potVal();                                             //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
-    int getPosition();                                        //returns either encoderVal() or potVal() depending on the value of potIsDefault
+    int encoderVal();                                     //returns encoder value of associated encoder if attached, 0 otherwise
+    void resetEncoder();                                  //resets associated encoder to 0
+    int potVal();                                         //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
+    int getPosition();                                    //returns either encoderVal() or potVal() depending on the value of potIsDefault
     //automovement
     void moveTowardPosition(int pos, char power=127);                                                       //moves group toward specified position
     void createManeuver(int position, char endPower=0, char maneuverPower=127, unsigned short timeout=10);  //sets a target position for group to attain
