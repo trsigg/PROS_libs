@@ -17,6 +17,8 @@ class MotorGroup {
     void setPower(char power, bool overrideAbsolutes=false);
     /*Sets all motors in group to the specified power.
       If overrideAbsolutes is true, ignores absolute minimums and maximums */
+    char getPower();  //returns the last set power of the motors in the group
+
     MotorGroup(std::vector<unsigned char> motors);  //TODO: should these vectors be passed as pointers?
     MotorGroup(std::vector<unsigned char> motors, Encoder* encoder);
     MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false);

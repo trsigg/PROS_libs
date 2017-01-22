@@ -16,6 +16,10 @@ void MotorGroup::setPower(char power, bool overrideAbsolutes) {
 		motorSet(motor, power);
 }
 
+char MotorGroup::getPower() {
+	return motorGet(motors.front());	//return power of first motor in group
+}
+
 //#region constructors
 MotorGroup::MotorGroup(std::vector<unsigned char> motors) : motors(motors) {
 	maneuverTimer = new Timer();

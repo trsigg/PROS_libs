@@ -3,8 +3,8 @@
 #include <cmath>
 #include "API.h"
 
-int ButtonGroup::takeInput() {
-  int power = 0;
+char ButtonGroup::takeInput() {
+  char power = 0;
 
   if (active) {
     if (joystickGetDigital(upJoystick, upGroup, upButton))
@@ -74,7 +74,7 @@ ButtonGroup::ButtonGroup(std::vector<unsigned char> motors) : MotorGroup(motors)
   active = false;
 }
 
-ButtonGroup::ButtonGroup(std::vector<unsigned char> motors, unsigned char buttonGroup, char stillSpeed, unsigned char buttonConfig, char power, char downPower, unsigned char joystick) : MotorGroup(motors) {
+ButtonGroup::ButtonGroup(unsigned char buttonGroup, std::vector<unsigned char> motors, char stillSpeed, unsigned char buttonConfig, char power, char downPower, unsigned char joystick) : MotorGroup(motors) {
   configureInput(buttonGroup, stillSpeed, buttonConfig, power, downPower, joystick);
 }
 
