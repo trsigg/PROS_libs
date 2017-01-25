@@ -25,6 +25,7 @@ class MotorGroup {
     //sensors
     void addSensor(Encoder* enc, double coeff=1, bool setAsDefault=true); //associates a sensor with the group. If setAsDefault is true, potIsDefault is adjusted accordingly
     void addSensor(unsigned char port, bool reversed=false, bool setAsDefault=true);
+    int encoderVal(bool rawValue=false);                                  //if encoder is attached, returns encoder value of associated encoder (multiplied by encCoeff unless rawValue is true), otherwise, it returns 0
     void resetEncoder();                                                  //resets associated encoder to 0
     int potVal();                                                         //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
     int getPosition();                                                    //returns either encoderVal() or potVal() depending on the value of potIsDefault
