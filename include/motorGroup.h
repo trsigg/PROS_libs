@@ -20,15 +20,14 @@ class MotorGroup {
     char getPower();  //returns the last set power of the motors in the group
 
     MotorGroup(std::vector<unsigned char> motors);  //TODO: should these vectors be passed as pointers?
-    MotorGroup(std::vector<unsigned char> motors, Encoder* encoder);
+    MotorGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff=1);
     MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false);
     //sensors
-    void addSensor(Encoder* enc, bool setAsDefault=true); //associates a sensor with the group (used by other methods in this section). If setAsDefault is true, potIsDefault is adjusted accordingly
+    void addSensor(Encoder* enc, double coeff=1, bool setAsDefault=true); //associates a sensor with the group. If setAsDefault is true, potIsDefault is adjusted accordingly
     void addSensor(unsigned char port, bool reversed=false, bool setAsDefault=true);
-    int encoderVal();                                     //returns encoder value of associated encoder if attached, 0 otherwise
-    void resetEncoder();                                  //resets associated encoder to 0
-    int potVal();                                         //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
-    int getPosition();                                    //returns either encoderVal() or potVal() depending on the value of potIsDefault
+    void resetEncoder();                                                  //resets associated encoder to 0
+    int potVal();                                                         //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
+    int getPosition();                                                    //returns either encoderVal() or potVal() depending on the value of potIsDefault
     //automovement
     void moveTowardPosition(int pos, char power=127);                                                       //moves group toward specified position
     void createManeuver(int position, char endPower=0, char maneuverPower=127, unsigned short timeout=10);  //sets a target position for group to attain
@@ -73,8 +72,9 @@ class MotorGroup {
     Timer* maneuverTimer;           //tracks timeout state of maneuvers
     //sensors
     Encoder* encoder;
+    double encCoeff;
     unsigned char potPort;
-    bool potReversed; //whether potentiometer is reversed (affects potVal() output)
+    bool potReversed;   //whether potentiometer is reversed (affects potVal() output)
     bool potIsDefault;  //whether potentiometer (as opposed to encoder) is default sensor for position measurements
 };
 

@@ -62,7 +62,7 @@ JoystickGroup::JoystickGroup(unsigned char axis, std::vector<unsigned char> moto
   configureInput(axis, coeff, powMap, maxAcc100ms, deadband, joystick);
 }
 
-JoystickGroup::JoystickGroup(std::vector<unsigned char> motors, Encoder* encoder) : MotorGroup(motors, encoder) {
+JoystickGroup::JoystickGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff) : MotorGroup(motors, encoder, coeff) {
   active = false;
 }
 

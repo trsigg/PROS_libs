@@ -78,7 +78,7 @@ ButtonGroup::ButtonGroup(unsigned char buttonGroup, std::vector<unsigned char> m
   configureInput(buttonGroup, stillSpeed, buttonConfig, power, downPower, joystick);
 }
 
-ButtonGroup::ButtonGroup(std::vector<unsigned char> motors, Encoder* encoder) : MotorGroup(motors, encoder) {
+ButtonGroup::ButtonGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff) : MotorGroup(motors, encoder, coeff) {
   active = false;
 }
 

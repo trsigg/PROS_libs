@@ -25,8 +25,8 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors) : motors(motors) {
 	maneuverTimer = new Timer();
 }
 
-MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder* encoder)
-												: motors(motors), encoder(encoder) {
+MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff)
+												: motors(motors), encoder(encoder), encCoeff(coeff) {
 	maneuverTimer = new Timer();
 }
 
@@ -37,8 +37,9 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort,
 //#endregion
 
 //#region sensors
-void MotorGroup::addSensor(Encoder* enc, bool setAsDefault) {
+void MotorGroup::addSensor(Encoder* enc, double coeff, bool setAsDefault) {
 	encoder = enc;
+	encCoeff = coeff;
 	if (setAsDefault) potIsDefault = false;
 }
 
@@ -48,15 +49,15 @@ void MotorGroup::addSensor(unsigned char port, bool reversed, bool setAsDefault)
 	if (setAsDefault) potIsDefault = true;
 }
 
-int MotorGroup::encoderVal() {
+int MotorGroup::encoderVal(bool rawValue) {
 	if (hasEncoder()) {
-		return encoderGet(encoder);
+		return encoderGet(*encoder) * (rawValue ? 1 : encCoeff);
 	}
 
 	return 0;	//possible debug location
 }
 
-void MotorGroup::resetEncoder() { encoderReset(encoder); }
+void MotorGroup::resetEncoder() { encoderReset(*encoder); }
 
 int MotorGroup::potVal() {
 	if (hasPotentiometer()) {
@@ -111,7 +112,7 @@ void MotorGroup::executeManeuver() {
 
 void MotorGroup::goToPosition(int pos, char endPower, char maneuverPower, unsigned short timeout) {
 	Timer posTimer = new Timer();
-	char displacementSign = sgn(pos - getPosition(group));
+	char displacementSign = sgn(pos - getPosition());
 	setPower(group, displacementSign*maneuverPower);
 
 	while (posTimer.time() < timeout) {
@@ -137,7 +138,7 @@ bool MotorGroup::hasPotentiometer() { return potPort; }
 bool MotorGroup::isManeuverExecuting() { return maneuverExecuting; }
 	//#endsubregion
 	//#subregion position limits
-void MotorGroup::setAbsMin(int min, int defPowerAtAbs, int maxPowerAtAbs) {
+void MotorGroup::setAbsMin(int min, char defPowerAtAbs, char maxPowerAtAbs) {
 	absMin = min;
 	hasAbsMin = true;
 	this->maxPowerAtAbs = maxPowerAtAbs;
