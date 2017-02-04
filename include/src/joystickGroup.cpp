@@ -8,7 +8,7 @@ char JoystickGroup::takeInput() {
 
   if (active) {
   	char input = joystickGetAnalog(joystick, axis);
-  	power = coeff * copysign(pow(input, powMap) / pow(127, powMap-1), input);
+  	power = coeff * copysign(127 * pow(input / 127.0, powMap), input);
 
   	if (abs(power) < deadband) power = 0;
 
