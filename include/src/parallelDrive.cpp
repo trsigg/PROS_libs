@@ -118,12 +118,27 @@ double ParallelDrive::gyroVal(angleType format) {
 }
 
 void ParallelDrive::resetGyro() {
+  angleOffset += gyroVal();
+
   if (hasGyro())  //possible debug location
     return gyroReset(*gyro);
 }
 
 double ParallelDrive::absAngle(angleType format) {
   return gyroVal() + convertAngle(angleOffset, DEGREES, format);
+}
+
+void ParallelDrive::updateEncConfig() {
+  if (leftDrive->hasEncoder()) {
+    if (rightDrive->hasEncoder())
+      encConfig = AVERAGE;
+    else
+      encConfig = LEFT;
+  } else if (rightDrive->hasEncoder()) {
+    encConfig = RIGHT;
+  } else {
+    encConfig = UNASSIGNED;
+  }
 }
 //#endregion
 
@@ -356,4 +371,40 @@ void initializeDefaults() {
   dDefs.kD_c = 0.25;
   dDefs.minDiffPerSample = 5;
 }
+//#endregion
+
+//#region accessors and mutators
+  //#subregion sensors
+void ParallelDrive::setEncoderConfig(encoderConfig config) { encConfig = config; }
+void ParallelDrive::setAbsAngle(double angle, angleType format) {
+  angle = convertAngle(angle, format, DEGREES);
+  angleOffset = angle - gyroVal();
+}
+Gyro* ParallelDrive::getGyroPtr() { return gyro; }
+bool ParallelDrive::hasGyro() { return gyro; }
+  //#endsubregion
+  //#subregion position tracking
+void ParallelDrive::setWidth(double inches) { width = inches; }
+void ParallelDrive::setRobotPosition(double x, double y, double theta, angleType format, bool updateAngleOffset) {
+  xPos = x;
+  yPos = y;
+  orientation = convertAngle(theta, format, RADIANS);
+  if (updateAngleOffset) setAbsAngle(convertAngle(theta, format, DEGREES));
+}
+double ParallelDrive::x() { return xPos; }
+double ParallelDrive::y() { return yPos; }
+double ParallelDrive::theta(angleType format) { return convertAngle(orientation, RADIANS, format); }
+  //#endsubregion
+  //#subregion autonomous
+void ParallelDrive::setCorrectionType(correctionType type) {
+  if (type==GYRO && hasGyro()) {
+		correction = GYRO;
+		while (abs(gyroVal()) > 10) resetGyro(); //I'm horrible, I know (this is here so gyro is only reset when correcting with it)
+	} else if (type==ENCODER && leftDrive->hasEncoder() && rightDrive->hasEncoder()) {
+		correction = ENCODER;
+	} else {
+		correction = NONE;
+	}
+}
+  //#endsubregion
 //#endregion

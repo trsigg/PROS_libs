@@ -113,9 +113,9 @@ class ParallelDrive {
     bool hasGyro();
       //#endsubregion
       //#subregion position tracking
-    void setWidth(double width);
-    void setRobotPosition(double x, double y, double theta, bool setAbsAngle=true); //sets angleOffset so that current absAngle is equal to theta if setAbsAngle if true
-    double x(); double y(); double theta();
+    void setWidth(double inches);
+    void setRobotPosition(double x, double y, double theta, angleType format=DEGREES, bool updateAngleOffset=true); //sets angleOffset so that current absAngle is equal to theta if setAbsAngle if true
+    double x(); double y(); double theta(angleType format=DEGREES);
       //#endsubregion
       //#subregion autonomous
     void setCorrectionType(correctionType type);
@@ -136,8 +136,8 @@ class ParallelDrive {
     int angleOffset;  //amount added to gyro values to obtain absolute angle (degrees)
     //#endregion
     //#region position tracking
-    double xPos, yPos, orientation;
-    double width;                 //width of drive in inches (wheel well to wheel well)
+    double xPos, yPos, orientation; //orientation is in radians
+    double width;                   //width of drive in inches (wheel well to wheel well)
     Timer* positionTimer;
     unsigned short minSampleTime; //minimum time between updates of robot's position
     gyroCorrectionType gyroCorrection;
