@@ -4,9 +4,11 @@
 #ifndef PID_INCLUDED
 #define PID_INCLUDED
 
+#include "ramper.h"
+
 class Timer;
 
-class PID {
+class PID : public Ramper {
 	public:
 		double evaluate(double input);		//performs PID calculations
 		void reset();       					 		//sets integral and prev-error to zero and resets updateTimer

@@ -59,7 +59,7 @@ int MotorGroup::encoderVal(bool rawValue) {
 	return 0;	//possible debug location
 }
 
-void MotorGroup::resetEncoder() { encoderReset(*encoder); }
+void MotorGroup::resetEncoder() { encoderReset(*encoder); }	//possible debug location
 
 int MotorGroup::potVal() {
 	if (hasPotentiometer()) {

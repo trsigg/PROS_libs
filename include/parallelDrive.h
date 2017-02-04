@@ -9,12 +9,10 @@
 
 #include "coreIncludes.h" //also includes <cmath>
 #include <vector>
+#include "API.h"
 
-class Encoder;
-class Gyro;
 class JoystickGroup;
 class PID;
-class Position;
 class Ramper;
 class Timer;
 
@@ -42,7 +40,7 @@ struct {
   angleType defAngleType;
   bool useGyro;
   char brakePower;
-  unsigned short waitAtEnd, brakeDuration;
+  unsigned short waitAtEnd, sampleTime, brakeDuration;
   double rampConst1, rampConst2, rampConst3;  //initialPower/0; maxPower/kP; finalPower/kD
 } tDefs;
 
@@ -53,105 +51,119 @@ struct {
   unsigned short waitAtEnd, sampleTime, brakeDuration, timeout;
   double rampConst1, rampConst2, rampConst3; //same as turn
   double kP_c, kI_c, kD_c;                   //correction PID constants
-  double minSpeed;                           //minimum speed (inches or clicks per second) which will not trigger a timeout
+  double minDiffPerSample;                           //minimum speed (inches or clicks per second) which will not trigger a timeout
 } dDefs;
 //#endregion
 
 class ParallelDrive {
   public:
+    //#region main methods
     void takeInput();
     void setLeftPower(char power);
     void setRightPower(char power);
     void setDrivePower(char left, char right);
-    void configureTankInput(double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1);
-    void configureArcadeInput(unsigned char movementAxis=1, unsigned char turningAxis=2, double coeff=1);
+    //#endregion
 
+    //#region constructors
     ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors);
-    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder* leftEnc, Encoder* rightEnc, double wheelDiameter=3.25, double gearRatio=1);
+    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder* leftEnc, Encoder* rightEnc, double wheelDiameter, double gearRatio=1);
     ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
     ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1);  //configures arcade input
+    //#endregion
 
+    //#region input config
+    void configureTankInput(double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1);
+    void configureArcadeInput(unsigned char movementAxis=1, unsigned char turningAxis=2, double coeff=1);
+    //#endregion
     //#region sensors
-    void addSensor(Encoder encoder, encoderConfig side, double wheelDiameter=3.25, double gearRatio=1); //encCoeff calculated from diameter and gear ratio (from wheel to encoder)
-    void addSensor(Gyro gyro, gyroCorrectionType correction=MEDIUM, bool setAbsAngle=true);
+    void addSensor(Encoder* encoder, encoderConfig side, double wheelDiameter, double gearRatio=1); //encCoeff calculated from diameter and gear ratio (from wheel to encoder)
+    void addSensor(Gyro* gyro, gyroCorrectionType correction=MEDIUM, bool setAbsAngle=true);
     double encoderVal(encoderConfig side=UNASSIGNED, bool rawValue=false, bool absolute=true);
     /* Returns the result of calling encoderVal() on motor group of specified
         side. When side is UNASSIGNED, encConfig is used to determine which
         encoders to use. AVERAGE returns the mean of the two sides' values, or
         that of their absolute values if absolute is true. */
-    void resetEncoder(encoderConfig side=UNASSIGNED); //When side is UNASSIGNED, encConfig is used to determine which encoder to reset
+    void resetEncoders();                       //When side is UNASSIGNED, encConfig is used to determine which encoder to reset
     double gyroVal(angleType format=DEGREES);
     void resetGyro();
-    double absAngle(angleType format=DEGREES);        //gyroVal() + angleOffset
+    double absAngle(angleType format=DEGREES);  //gyroVal() + angleOffset
     //#endregion
     //#region position tracking
     void updatePosition();  //takes encoder (and possibly gyro) input and updates robot's current position
-    //#endregion
-    //#region misc
-    double calculateWidth(int duration=10000, int sampleTime=200, int power=80, int reverseDelay=750);
+    double calculateWidth(unsigned short duration=10000, unsigned short sampleTime=200, char power=80, unsigned short reverseDelay=750);
     /* Causes robot to spin and uses gyro and encoder input to calculate width
-        of its drive, which is returned but NOT automatically set. Power is the
+        of its drive, which is returned and automatically set. Power is the
         motor power used in turning, and reverse delay is the amount of time for
         which samples are not taken as drive changes spinning direction. */
     //#endregion
     //#region automovement
-    void turn(double angle, bool runAsManeuver=false, double in1=tDefs.rampConst1, double in2=tDefs.rampConst2, double in3=tDefs.rampConst3, angleType format=tDefs.defAngleType, unsigned short waitAtEnd=tDefs.waitAtEnd, char brakePower=tDefs.brakePower, unsigned short brakeDuration=tDefs.brakeDuration, bool useGyro=tDefs.useGyro); //for PD, in1=0, in2=kP, in3=kD; for quad ramping, in1=initial, in2=maximum, and in3=final
-    void drive(double dist, bool runAsManeuver=false, double in1=dDefs.rampConst1, double in2=dDefs.rampConst2, double in3=dDefs.rampConst3, double kP=dDefs.kP_c, double kI=dDefs.kI_c, double kD=dDefs.kD_c, correctionType correction=dDefs.defCorrectionType, bool rawValue=dDefs.rawValue, double minSpeed=dDefs.minSpeed, unsigned short timeout=dDefs.timeout, char brakePower=dDefs.brakePower, unsigned short waitAtEnd=dDefs.waitAtEnd, unsigned short sampleTime=dDefs.sampleTime); //for PD, in1=0, in2=kP, in3=kD; for quad ramping, in1=initial, in2=maximum, and in3=final
-    void executeDriveManeuver();  //executes turn and drive maneuvers
-    void driveManeuverProgress(); //returns distance traveled or angle turned while maneuver is in progress
+    void turn(double angle, bool runAsManeuver=false, double in1=tDefs.rampConst1, double in2=tDefs.rampConst2, double in3=tDefs.rampConst3, angleType format=tDefs.defAngleType, unsigned short waitAtEnd=tDefs.waitAtEnd, unsigned short sampleTime=tDefs.sampleTime, char brakePower=tDefs.brakePower, unsigned short brakeDuration=tDefs.brakeDuration, bool useGyro=tDefs.useGyro);
+    void drive(double dist, bool runAsManeuver=false, double in1=dDefs.rampConst1, double in2=dDefs.rampConst2, double in3=dDefs.rampConst3, unsigned short waitAtEnd=dDefs.waitAtEnd, double kP=dDefs.kP_c, double kI=dDefs.kI_c, double kD=dDefs.kD_c, correctionType correction=dDefs.defCorrectionType, bool rawValue=dDefs.rawValue, double minSpeed=dDefs.minDiffPerSample, unsigned short timeout=dDefs.timeout, char brakePower=dDefs.brakePower, unsigned short brakeDuration=dDefs.brakeDuration, unsigned short sampleTime=dDefs.sampleTime);
+    /* For quad-ramped movement, in1=initial power, in2=maxPower, and
+        in3=finalPower. For PD-ramped movement, in1=0, in2=kP, and in3=kD. */
+    void executeManeuver();                             //executes turn and drive maneuvers
+    double maneuverProgress(angleType format=DEGREES);  //returns absolute value odistance traveled or angle turned while maneuver is in progress
+    bool maneuverExecuting();
     //#endregion
     //#region accessors and mutators
       //#subregion sensors
     void setEncoderConfig(encoderConfig config);
     void setAbsAngle(double angle=0, angleType format=DEGREES); //sets angleOffset so that current absAngle is equal to specified angle
+    Gyro* getGyroPtr();
+    bool hasGyro();
       //#endsubregion
       //#subregion position tracking
+    void setWidth(double width);
     void setRobotPosition(double x, double y, double theta, bool setAbsAngle=true); //sets angleOffset so that current absAngle is equal to theta if setAbsAngle if true
+    double x(); double y(); double theta();
+      //#endsubregion
+      //#subregion autonomous
+    void setCorrectionType(correctionType type);
       //#endsubregion
     //#endregion
   private:
-    void updateEncoderConfig(); //automatically updates encConfig when a new encoder is attached
     JoystickGroup* leftDrive;
     JoystickGroup* rightDrive;
-    Position* robotPosition;
-    double width; //width of drive in inches (wheel well to wheel well). Used to track position.
     //#region arcade
     bool arcadeInput;
     double coeff;
     unsigned char moveAxis, turnAxis, joystick;
     //#endregion
     //#region sensors
-    void updateEncConfig();
+    void updateEncConfig(); //automatically updates encConfig when a new encoder is attached
     encoderConfig encConfig;
     Gyro* gyro;
-    int angleOffset;  //amount added to gyro values to obtain absolute angle
+    int angleOffset;  //amount added to gyro values to obtain absolute angle (degrees)
     //#endregion
     //#region position tracking
+    double xPos, yPos, orientation;
+    double width;                 //width of drive in inches (wheel well to wheel well)
     Timer* positionTimer;
     unsigned short minSampleTime; //minimum time between updates of robot's position
     gyroCorrectionType gyroCorrection;
     //#endregion
     //#region automovement
+    void initializeDefaults();  //initializes default automovement values (called by constructors)
     double target;  //angle or distance
     Ramper* ramp;    //controls motor power ramping during maneuver
-    unsigned short waitAtEnd, brakeDuration;
+    unsigned short finalDelay, sampleTime, brakeDelay;
     char brakePower;
-    bool driveManeuverExecuting;
-    bool forward;   //sign of target
       //#subregion turning
+    bool isTurning;
     angleType format;
     bool usingGyro;
       //#endsubregion
       //#subregion driving
+    bool isDriving;
     bool rawValue;
-    double minSpeed;
-    unsigned int sampleTime, timeout;
+    double minDiffPerSample;
+    unsigned short timeout;
     correctionType correction;
     PID* correctionPID;
     double leftDist, rightDist, totalDist;
-    Timer* driveTimer;
+    Timer* sampleTimer;
+    Timer* timeoutTracker;
       //#endsubregion
-    void setCorrectionType();
     //#endregion
 };
 
