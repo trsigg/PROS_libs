@@ -26,6 +26,11 @@ void PID::reset() {
 	updateTimer->reset();
 }
 
+void PID::changeTarget(double target) {
+	this->target = target;
+	reset();
+}
+
 PID::PID(double target, double kP, double kI, double kD, unsigned short minSampleTime, double integralMax, bool useTimeAdjustment)
 					: target(target), kP(kP), kI(kI), kD(kD), minSampleTime(minSampleTime), integralMax(std::abs(integralMax)), useTimeAdjustment(useTimeAdjustment) {
 	integral = 0;
@@ -43,7 +48,6 @@ void PID::setCoeffs(double kP, double kI, double kD) {
 	this->kD = kD;
 }
 double PID::getTarget() { return target; }
-void PID::setTarget(double target) { this->target = target; }
 double PID::getIntegral() { return integral; }
 void PID::setIntegral(double integral) { this->integral = integral; }
 unsigned short PID::getMinSampleTime() { return minSampleTime; }

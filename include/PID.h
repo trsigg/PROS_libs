@@ -8,8 +8,9 @@ class Timer;
 
 class PID {
 	public:
-		double evaluate(double input); //performs PID calculations
-		void reset();       					 //sets integral and prev-error to zero and resets updateTimer
+		double evaluate(double input);		//performs PID calculations
+		void reset();       					 		//sets integral and prev-error to zero and resets updateTimer
+		void changeTarget(double target);	//sets target and calls reset()
     PID(double target, double kP, double kI, double kD, unsigned short minSampleTime=30, double integralMax=0, bool useTimeAdjustment=false);
 		//accessors and mutators
 		double get_kP();
@@ -17,7 +18,6 @@ class PID {
     double get_kD();
 		void setCoeffs(double kP, double kI, double kD);
 		double getTarget();
-		void setTarget(double target);
 		double getIntegral();
 		void setIntegral(double integral);
 		unsigned short getMinSampleTime();
