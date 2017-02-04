@@ -9,19 +9,12 @@ int limit(int input, int min, int max) {
 	}
 }
 
-double convertAngle(double angle, angleType output, angleType input) {
+double convertAngle(double angle, angleType input, angleType output) {
 	if (input != output) {
-		if (input == DEGREES) { //convert input to RAW
-			angle *= 10;
-		} else if (input == RADIANS) {
-			angle *= 1800 / PI;
-		}
-
-		if (output == DEGREES) {
-			angle /= 10;
-		} else if (output == RADIANS) {
-			angle *= PI / 1800;
-		}
+		if (input == DEGREES) //convert to radians
+			angle *= PI / 180;
+		else									//convert to degrees
+			angle *= 180 / PI;
 	}
 
 	return angle;

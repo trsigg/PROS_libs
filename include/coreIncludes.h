@@ -8,7 +8,7 @@
 const double PI = acos(-1);
 /* Because math doesn't have a pi constant for some reason */
 
-enum angleType { DEGREES, RADIANS, RAW };
+enum angleType { DEGREES, RADIANS };
 /*Used for specifying the format of an angle.
 
   RAW corresponds to 10*degrees, which is how VEX gyros format angles */
@@ -21,7 +21,7 @@ int limit(int input, int min, int max);
   Otherwise, returns input. */
 
 
-double convertAngle(double angle, angleType output, angleType input=RAW);
+double convertAngle(double angle, angleType input, angleType output);
 /* Converts angle of type input to type output */
 
 char sgn(double x);
