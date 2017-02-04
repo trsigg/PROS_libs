@@ -63,11 +63,12 @@ class ParallelDrive {
     void setLeftPower(char power);
     void setRightPower(char power);
     void setDrivePower(char left, char right);
-    void configureTankInput(double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char joystick=1);
-    void configureArcadeInput(unsigned char movementAxis, unsigned char turningAxis, double coeff=1);
+    void configureTankInput(double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1);
+    void configureArcadeInput(unsigned char movementAxis=1, unsigned char turningAxis=2, double coeff=1);
 
-    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder* leftEnc, Encoder* rightEnc=nullptr);
-    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char leftJoystick=1, unsigned char rightAxis=2); //configures tank input
+    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors);
+    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder* leftEnc, Encoder* rightEnc, double wheelDiameter=3.25, double gearRatio=1);
+    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
     ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1);  //configures arcade input
 
     //#region sensors
@@ -110,11 +111,17 @@ class ParallelDrive {
     //#endregion
   private:
     void updateEncoderConfig(); //automatically updates encConfig when a new encoder is attached
-    JoystickGroup* leftMotors;
-    JoystickGroup* rightMotors;
+    JoystickGroup* leftDrive;
+    JoystickGroup* rightDrive;
     Position* robotPosition;
     double width; //width of drive in inches (wheel well to wheel well). Used to track position.
+    //#region arcade
+    bool arcadeInput;
+    double coeff;
+    unsigned char moveAxis, turnAxis, joystick;
+    //#endregion
     //#region sensors
+    void updateEncConfig();
     encoderConfig encConfig;
     Gyro* gyro;
     int angleOffset;  //amount added to gyro values to obtain absolute angle
