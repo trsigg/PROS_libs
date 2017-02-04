@@ -83,18 +83,6 @@ void MotorGroup::moveTowardPosition(int pos, char power) {
 	return setPower(copysign(power, pos-getPosition()));
 }
 
-void MotorGroup::createManeuver(int position, char endPower, char maneuverPower, unsigned short timeout) {
-	maneuverTarget = position;
-	endPower = endPower;
-	forward = maneuverTarget > getPosition();
-	maneuverPower = abs(maneuverPower) * (forward ? 1 : -1);
-	maneuverExecuting = true;
-	maneuverTimeout = timeout;
-	maneuverTimer->reset();
-
-	setPower(maneuverPower);
-}
-
 void MotorGroup::stopManeuver() {
 	maneuverExecuting = false;
 	setPower(0);
@@ -112,16 +100,18 @@ void MotorGroup::executeManeuver() {
 	}
 }
 
-void MotorGroup::goToPosition(int pos, char endPower, char maneuverPower, unsigned short timeout) {
-	Timer posTimer;
-	char displacementSign = sgn(pos - getPosition());
-	setPower(displacementSign * maneuverPower);
+void MotorGroup::goToPosition(int pos, bool runAsManeuver, char endPower, char maneuverPower, unsigned short timeout) {
+	maneuverTarget = pos;
+	endPower = endPower;
+	forward = maneuverTarget > getPosition();
+	maneuverPower = copysign(maneuverPower, (forward ? 1 : -1));
+	maneuverExecuting = true;
+	maneuverTimeout = timeout;
+	maneuverTimer->reset();
 
-	while (posTimer.time() < timeout) {
-		if (sgn(pos - getPosition()) == displacementSign) posTimer.reset();
+	if (!runAsManeuver) {
+		while (maneuverExecuting) executeManeuver();
 	}
-
-	setPower(endPower);
 }
 
 	//#subregion position targeting

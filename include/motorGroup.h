@@ -31,11 +31,10 @@ class MotorGroup {
     int potVal();                                                         //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
     int getPosition();                                                    //returns either encoderVal() or potVal() depending on the value of potIsDefault
     //automovement
-    void moveTowardPosition(int pos, char power=127);                                                       //moves group toward specified position
-    void createManeuver(int position, char endPower=0, char maneuverPower=127, unsigned short timeout=10);  //sets a target position for group to attain
+    void moveTowardPosition(int pos, char power=127);                                                                    //moves group toward specified position
+    void goToPosition(int pos, bool runAsManeuver=false, char endPower=0, char maneuverPower=127, unsigned short timeout=10);  //goes to specified position
     void stopManeuver();
-    void executeManeuver();                                                                                 //moves group toward target and updates maneuver progress
-    void goToPosition(int pos, char endPower=0, char maneuverPower=127, unsigned short timeout=100);         //moves group to specified position
+    void executeManeuver();                                                                                              //moves group toward target and updates maneuver progress
       //position targeting
     void setPosPIDconsts(double kP, double kI, double kD);  //sets PID constants used for maintaining target position
     void setTargetPosition(int position);                   //sets target and activates position targeting
