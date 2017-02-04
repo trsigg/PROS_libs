@@ -8,9 +8,10 @@
 #define MOTOR_GROUP_INCLUDED
 
 #include <vector>
+#include "API.h"
 
+class PID;
 class Timer;
-class Encoder;
 
 class MotorGroup {
   public:
@@ -35,6 +36,10 @@ class MotorGroup {
     void stopManeuver();
     void executeManeuver();                                                                                 //moves group toward target and updates maneuver progress
     void goToPosition(int pos, char endPower=0, char maneuverPower=127, unsigned short timeout=100);         //moves group to specified position
+      //position targeting
+    void setPosPIDconsts(double kP, double kI, double kD);  //sets PID constants used for maintaining target position
+    void setTargetPosition(int position);                   //sets target and activates position targeting
+    void maintainTargetPos();																//moves toward or tries to maintain target position. setPosPIDconsts() must have been called prior to this funciton
     //accessors and mutators
       //sensors
     bool isPotReversed();       //returns false if no potentiometer is attached
@@ -47,9 +52,11 @@ class MotorGroup {
     bool hasPotentiometer();
       //automovement
     bool isManeuverExecuting();
+    void activatePositionTargeting();
+    void deactivatePositionTargeting();
       //position limits
     void setAbsMin(int minPos, char defPowerAtAbs=0, char maxPowerAtAbs=20);
-    void setAbMax(int maxPos, char defPowerAtAbs=0, char maxPowerAtAbs=20);
+    void setAbsMax(int maxPos, char defPowerAtAbs=0, char maxPowerAtAbs=20);
     void setAbsolutes(int minPos, int maxPos, char defPowerAtAbs=0, char maxPowerAtAbs=20); //set absMin and absMax simultaneously
     int getAbsMin();
     int getAbsMax();
@@ -65,12 +72,15 @@ class MotorGroup {
     char defPowerAtAbs;         //the default absolute power assigned when motorGroup is set to a power greater than maxPowerAtAbs when potentiometer is outside of the range [absMin, absMax]
     bool hasAbsMax, hasAbsMin;  //whether absMin and absMax have been set
     //maneuvers - autonomous actions which can be run concurrently
-    int targetPos;                  //encoder or potentiometer value maneuver tries to reach
+    int maneuverTarget;             //encoder or potentiometer value maneuver tries to reach
     char maneuverPower, endPower;   //the motor powers during and after the maneuver
     unsigned short maneuverTimeout; //the amount of time (milliseconds) for which a position past the target position must be detected for maneuver to stop
     bool forward;                   //whether target is forward (in the positive motor power direction) of starting position
     bool maneuverExecuting;         //whether a maneuver is currently in progress
     Timer* maneuverTimer;           //tracks timeout state of maneuvers
+		//position targeting
+		PID* targetPosPID;
+    bool targetingActive;
     //sensors
     Encoder* encoder;
     double encCoeff;
@@ -78,7 +88,6 @@ class MotorGroup {
     bool potReversed;   //whether potentiometer is reversed (affects potVal() output)
     bool potIsDefault;  //whether potentiometer (as opposed to encoder) is default sensor for position measurements
 };
-
 
 
 #endif

@@ -1,7 +1,7 @@
-#include "motorGroup.h"		//also includes vector
+#include "motorGroup.h"		//also includes vector and API
 #include "coreIncludes.h"	//also includes <cmath>
+#include "PID.h"
 #include "Timer.h"
-#include "API.h"
 
 void MotorGroup::setPower(char power, bool overrideAbsolutes) {
 	if (!overrideAbsolutes) {
@@ -28,6 +28,7 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors) : motors(motors) {
 MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff)
 												: motors(motors), encoder(encoder), encCoeff(coeff) {
 	maneuverTimer = new Timer();
+	encoderReset(*encoder);
 }
 
 MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed)
@@ -40,6 +41,7 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort,
 void MotorGroup::addSensor(Encoder* enc, double coeff, bool setAsDefault) {
 	encoder = enc;
 	encCoeff = coeff;
+	encoderReset(*enc);
 	if (setAsDefault) potIsDefault = false;
 }
 
@@ -71,20 +73,20 @@ int MotorGroup::getPosition() {
 	if (hasPotentiometer() && hasEncoder()) {
 		return potIsDefault ? potVal() : encoderVal();
 	} else {
-		return (hasEncoder() ? encoderVal(group) : potVal(group));
+		return (hasEncoder() ? encoderVal() : potVal());
 	}
 }
 //#endregion
 
 //#region position movement
-void MotorGroup::moveTowardPosition(int pos, int power) {
-	return setPower(copysign(power, position-getPosition()));
+void MotorGroup::moveTowardPosition(int pos, char power) {
+	return setPower(copysign(power, pos-getPosition()));
 }
 
 void MotorGroup::createManeuver(int position, char endPower, char maneuverPower, unsigned short timeout) {
-	targetPos = position;
+	maneuverTarget = position;
 	endPower = endPower;
-	forward = targetPos > getPosition();
+	forward = maneuverTarget > getPosition();
 	maneuverPower = abs(maneuverPower) * (forward ? 1 : -1);
 	maneuverExecuting = true;
 	maneuverTimeout = timeout;
@@ -100,7 +102,7 @@ void MotorGroup::stopManeuver() {
 
 void MotorGroup::executeManeuver() {
 	if (maneuverExecuting) {
-		if (forward == (getPosition() < targetPos)) {
+		if (forward == (getPosition() < maneuverTarget)) {
 			maneuverTimer->reset();
 			setPower(maneuverPower);
 		} else if (maneuverTimer->time() > maneuverTimeout) {
@@ -111,16 +113,33 @@ void MotorGroup::executeManeuver() {
 }
 
 void MotorGroup::goToPosition(int pos, char endPower, char maneuverPower, unsigned short timeout) {
-	Timer posTimer = new Timer();
+	Timer posTimer;
 	char displacementSign = sgn(pos - getPosition());
-	setPower(group, displacementSign*maneuverPower);
+	setPower(displacementSign * maneuverPower);
 
 	while (posTimer.time() < timeout) {
 		if (sgn(pos - getPosition()) == displacementSign) posTimer.reset();
 	}
 
-	setPower(group, endPower);
+	setPower(endPower);
 }
+
+	//#subregion position targeting
+void MotorGroup::setPosPIDconsts(double kP, double kI, double kD) {
+	targetPosPID = new PID(0, kP, kI, kD);
+}
+
+void MotorGroup::setTargetPosition(int position) {
+	targetPosPID->changeTarget(position);
+	targetingActive = true;
+}
+
+void MotorGroup::maintainTargetPos() {
+	if (targetingActive && targetPosPID) {
+		setPower(targetPosPID->evaluate(getPosition()));
+	}
+}
+	//#endsubregion
 //#endregion
 
 //#region accessors and mutators
@@ -136,6 +155,8 @@ bool MotorGroup::hasPotentiometer() { return potPort; }
 	//#endsubregion
 	//#subregion automovement
 bool MotorGroup::isManeuverExecuting() { return maneuverExecuting; }
+void MotorGroup::activatePositionTargeting() { targetingActive = true; }
+void MotorGroup::deactivatePositionTargeting() { targetingActive = false; }
 	//#endsubregion
 	//#subregion position limits
 void MotorGroup::setAbsMin(int min, char defPowerAtAbs, char maxPowerAtAbs) {
@@ -144,13 +165,13 @@ void MotorGroup::setAbsMin(int min, char defPowerAtAbs, char maxPowerAtAbs) {
 	this->maxPowerAtAbs = maxPowerAtAbs;
 	this->defPowerAtAbs = defPowerAtAbs;
 }
-void MotorGroup::setAbsMax(int max, int defPowerAtAbs, int maxPowerAtAbs) {
+void MotorGroup::setAbsMax(int max, char defPowerAtAbs, char maxPowerAtAbs) {
 	absMax = max;
 	hasAbsMax = true;
 	this->maxPowerAtAbs = maxPowerAtAbs;
 	this->defPowerAtAbs = defPowerAtAbs;
 }
-void MotorGroup::setAbsolutes(int min, int max, int defPowerAtAbs, int maxPowerAtAbs) {
+void MotorGroup::setAbsolutes(int min, int max, char defPowerAtAbs, char maxPowerAtAbs) {
 	absMin = min;
 	absMax = max;
 	hasAbsMin = true;
@@ -165,22 +186,4 @@ void MotorGroup::setDefPowerAtAbs(char power) { defPowerAtAbs = power; }
 char MotorGroup::getMaxPowerAtAbs() { return maxPowerAtAbs; }
 void MotorGroup::setMaxPowerAtAbs(char power) { maxPowerAtAbs = power; }
 	//#endsubregion
-//#endregion
-
-//#region position limiting
-void setAbsMax(int max, int defPowerAtAbs=0, int maxPowerAtAbs=20) {
-	absMax = max;
-	hasAbsMax = true;
-	maxPowerAtAbs = maxPowerAtAbs;
-	defPowerAtAbs = defPowerAtAbs;
-}
-
-void setAbsolutes(motorGroup *group, int min, int max, int defPowerAtAbs=0, int maxPowerAtAbs=20) {
-	absMin = min;
-	absMax = max;
-	hasAbsMin = true;
-	hasAbsMax = true;
-	maxPowerAtAbs = maxPowerAtAbs;
-	defPowerAtAbs = defPowerAtAbs;
-}
 //#endregion
