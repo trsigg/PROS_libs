@@ -1,5 +1,5 @@
 #include "quadRamp.h"
-#include "coreIncludes.h" //also includes <cmath>
+#include "coreIncludes.h" //also includes math
 
 QuadRamp::QuadRamp(float target, float initial, float maximum, float end) {
   a = (pow(target, 2) * (end+initial-2*maximum) - 2*sqrt(pow(target, 4) * (end-maximum) * (initial-maximum))) / pow(target, 4);

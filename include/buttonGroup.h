@@ -20,7 +20,7 @@ class ButtonGroup : public MotorGroup {
 
     ButtonGroup(std::vector<unsigned char> motors);
     ButtonGroup(unsigned char buttonGroup, std::vector<unsigned char> motors, char stillSpeed=0, unsigned char buttonConfig=0, char power=127, char downPower=0, unsigned char joystick=1);
-    ButtonGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff=1);
+    ButtonGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff=1);
     ButtonGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false);
 
     //accessors and mutators

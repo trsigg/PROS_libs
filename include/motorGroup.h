@@ -21,10 +21,10 @@ class MotorGroup {
     char getPower();  //returns the last set power of the motors in the group
 
     MotorGroup(std::vector<unsigned char> motors);  //TODO: should these vectors be passed as pointers?
-    MotorGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff=1);
+    MotorGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff=1);
     MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false);
     //sensors
-    void addSensor(Encoder* enc, double coeff=1, bool setAsDefault=true); //associates a sensor with the group. If setAsDefault is true, potIsDefault is adjusted accordingly
+    void addSensor(Encoder enc, double coeff=1, bool setAsDefault=true); //associates a sensor with the group. If setAsDefault is true, potIsDefault is adjusted accordingly
     void addSensor(unsigned char port, bool reversed=false, bool setAsDefault=true);
     int encoderVal(bool rawValue=false);                                  //if encoder is attached, returns encoder value of associated encoder (multiplied by encCoeff unless rawValue is true), otherwise, it returns 0
     void resetEncoder();                                                  //resets associated encoder to 0
@@ -45,7 +45,7 @@ class MotorGroup {
     void setPotReversed(bool reversed);
     bool isPotDefault();
     void setDefaultSensor(bool potIsDefault);
-    Encoder* getEncoderPtr();   //returns pointer to associated encoder or nullptr if no encoder is attached
+    Encoder getEncoderPtr();   //returns pointer to associated encoder or nullptr if no encoder is attached
     unsigned char getPotPort(); //returns port of associated potentiometer or 0 if no potentiometer is attached
     bool hasEncoder();
     bool hasPotentiometer();
@@ -81,7 +81,7 @@ class MotorGroup {
 		PID* targetPosPID;
     bool targetingActive;
     //sensors
-    Encoder* encoder;
+    Encoder encoder;
     double encCoeff;
     unsigned char potPort;
     bool potReversed;   //whether potentiometer is reversed (affects potVal() output)

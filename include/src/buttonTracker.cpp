@@ -1,6 +1,6 @@
 #include "buttonTracker.h" //also includes config
 #include "API.h"
-#include <cmath>
+#include "math.h"
 
 bool ButtonTracker::isValidButton(unsigned char buttonGroup, unsigned char button, unsigned char joystick) {
 	//possible debug location

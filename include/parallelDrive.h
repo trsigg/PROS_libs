@@ -7,7 +7,7 @@
 #ifndef PARALLEL_DRIVE_INCLUDED
 #define PARALLEL_DRIVE_INCLUDED
 
-#include "coreIncludes.h" //also includes <cmath>
+#include "coreIncludes.h" //also includes math
 #include <vector>
 #include "API.h"
 
@@ -65,8 +65,8 @@ class ParallelDrive {
     //#endregion
 
     //#region constructors
-    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors);
-    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder* leftEnc, Encoder* rightEnc, double wheelDiameter, double gearRatio=1);
+    //remove? ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors);
+    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio=1);
     ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
     ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1);  //configures arcade input
     //#endregion
@@ -76,8 +76,8 @@ class ParallelDrive {
     void configureArcadeInput(unsigned char movementAxis=1, unsigned char turningAxis=2, double coeff=1);
     //#endregion
     //#region sensors
-    void addSensor(Encoder* encoder, encoderConfig side, double wheelDiameter, double gearRatio=1); //encCoeff calculated from diameter and gear ratio (from wheel to encoder)
-    void addSensor(Gyro* gyro, gyroCorrectionType correction=MEDIUM, bool setAbsAngle=true);
+    void addSensor(Encoder encoder, encoderConfig side, double wheelDiameter=3.25, double gearRatio=1); //encCoeff calculated from diameter and gear ratio (from wheel to encoder)
+    void addSensor(Gyro gyro, gyroCorrectionType correction=MEDIUM, bool setAbsAngle=true);
     double encoderVal(encoderConfig side=UNASSIGNED, bool rawValue=false, bool absolute=true);
     /* Returns the result of calling encoderVal() on motor group of specified
         side. When side is UNASSIGNED, encConfig is used to determine which

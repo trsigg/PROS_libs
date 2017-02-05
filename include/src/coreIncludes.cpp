@@ -1,4 +1,4 @@
-#include "coreIncludes.h"	//also includes <cmath>
+#include "coreIncludes.h"	//also includes math
 
 int limit(int input, int min, int max) {
 	if (input <= max && input >= min) {

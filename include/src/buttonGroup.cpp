@@ -1,6 +1,6 @@
 #include "buttonGroup.h"
 #include "buttonTracker.h"
-#include <cmath>
+#include "math.h"
 #include "API.h"
 
 char ButtonGroup::takeInput() {
@@ -78,7 +78,7 @@ ButtonGroup::ButtonGroup(unsigned char buttonGroup, std::vector<unsigned char> m
   configureInput(buttonGroup, stillSpeed, buttonConfig, power, downPower, joystick);
 }
 
-ButtonGroup::ButtonGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff) : MotorGroup(motors, encoder, coeff) {
+ButtonGroup::ButtonGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff) : MotorGroup(motors, encoder, coeff) {
   active = false;
 }
 

@@ -1,4 +1,4 @@
-#include "parallelDrive.h"  //also includes coreIncludes, cmath, vector, and API
+#include "parallelDrive.h"  //also includes coreIncludes, math, vector, and API
 #include "joystickGroup.h"
 #include "PID.h"
 #include "quadRamp.h"
@@ -26,14 +26,14 @@ void ParallelDrive::setDrivePower(char left, char right) {
 //#endregion
 
 //#region constructors
-ParallelDrive::ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors) {
+/*remove? ParallelDrive::ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors) {
   leftDrive = new JoystickGroup(leftMotors);
   rightDrive = new JoystickGroup(rightMotors);
 
   initializeDefaults();
-}
+}*/
 
-ParallelDrive::ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder* leftEnc, Encoder* rightEnc, double wheelDiameter, double gearRatio) {
+ParallelDrive::ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio) {
   double coeff = PI * wheelDiameter * gearRatio / 360;
 
   leftDrive = new JoystickGroup(leftMotors, leftEnc, coeff);
@@ -72,7 +72,7 @@ void ParallelDrive::configureArcadeInput(unsigned char movementAxis, unsigned ch
 //#endregion
 
 //#region sensors
-void ParallelDrive::addSensor(Encoder* encoder, encoderConfig side, double wheelDiameter, double gearRatio) {
+void ParallelDrive::addSensor(Encoder encoder, encoderConfig side, double wheelDiameter, double gearRatio) {
   double coeff = PI * wheelDiameter * gearRatio / 360;
 
   if (side == LEFT) {

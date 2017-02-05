@@ -1,6 +1,6 @@
 #include "PID.h"
 #include "timer.h"
-#include <cmath>
+#include "math.h"
 
 double PID::evaluate(double input) {
 	unsigned long elapsed = updateTimer->time();

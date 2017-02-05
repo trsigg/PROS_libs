@@ -3,7 +3,7 @@
 #ifndef COREINCLUDES_INCLUDED
 #define COREINCLUDES_INCLUDED
 
-#include <cmath>
+#include "math.h"
 
 const double PI = acos(-1);
 /* Because math doesn't have a pi constant for some reason */

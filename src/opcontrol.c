@@ -1,7 +1,9 @@
 #include "main.h"
+#include "config.h"
 
 void operatorControl() {
 	while (true) {
-		delay(20);
+		lift.takeInput();
+		drive.takeInput();
 	}
 }

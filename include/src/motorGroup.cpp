@@ -1,5 +1,5 @@
 #include "motorGroup.h"		//also includes vector and API
-#include "coreIncludes.h"	//also includes <cmath>
+#include "coreIncludes.h"	//also includes math.h
 #include "PID.h"
 #include "Timer.h"
 
@@ -25,7 +25,7 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors) : motors(motors) {
 	maneuverTimer = new Timer();
 }
 
-MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder* encoder, double coeff)
+MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff)
 												: motors(motors), encoder(encoder), encCoeff(coeff) {
 	maneuverTimer = new Timer();
 	encoderReset(*encoder);
@@ -38,7 +38,7 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort,
 //#endregion
 
 //#region sensors
-void MotorGroup::addSensor(Encoder* enc, double coeff, bool setAsDefault) {
+void MotorGroup::addSensor(Encoder enc, double coeff, bool setAsDefault) {
 	encoder = enc;
 	encCoeff = coeff;
 	encoderReset(*enc);
@@ -138,7 +138,7 @@ bool MotorGroup::isPotReversed() { return potReversed; }
 void MotorGroup::setPotReversed(bool reversed) { potReversed = reversed; }
 bool MotorGroup::isPotDefault() { return potIsDefault; }
 void MotorGroup::setDefaultSensor(bool potIsDefault) { this->potIsDefault = potIsDefault; }
-Encoder* MotorGroup::getEncoderPtr() { return encoder; }
+Encoder MotorGroup::getEncoderPtr() { return encoder; }
 unsigned char MotorGroup::getPotPort() { return potPort; }
 bool MotorGroup::hasEncoder() { return encoder; }
 bool MotorGroup::hasPotentiometer() { return potPort; }
