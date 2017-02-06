@@ -9,9 +9,7 @@ const double PI = acos(-1);
 /* Because cmath doesn't have a pi constant for some reason */
 
 enum angleType { DEGREES, RADIANS };
-/*Used for specifying the format of an angle.
-
-  RAW corresponds to 10*degrees, which is how VEX gyros format angles */
+/*Used for specifying the format of an angle. */
 
 int limit(int input, int min, int max);
 /* Restricts input to the interval [min, max]

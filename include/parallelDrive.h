@@ -26,7 +26,7 @@ enum encoderConfig { UNASSIGNED, LEFT, RIGHT, AVERAGE };
 enum gyroCorrectionType { NO, MEDIUM, FULL };
 /* How gyro is used during position tracking.
 
-    NONE does not use gyro. MEDIUM (currently most reliable) uses gyro to track
+    NO does not use gyro. MEDIUM (currently most reliable) uses gyro to track
     orientation only. FULL attempts to correct encoder values based on gyro input. */
 enum correctionType { NONE, GYRO, ENCODER, AUTO };
 /* How correction is performed during automovement. GYRO tries to maintain a
@@ -36,15 +36,16 @@ enum correctionType { NONE, GYRO, ENCODER, AUTO };
 //#endregion
 
 //#region defaults
-struct {
+struct TurnDefaults {
   angleType defAngleType;
   bool useGyro;
   char brakePower;
   unsigned short waitAtEnd, sampleTime, brakeDuration;
   double rampConst1, rampConst2, rampConst3;  //initialPower/0; maxPower/kP; finalPower/kD
-} tDefs;
+};
+extern TurnDefaults tDefs;
 
-struct {
+struct DriveDefaults {
   correctionType defCorrectionType;
   bool rawValue;                             //whether to use encoder clicks (as opposed to inches)
   char brakePower;
@@ -52,7 +53,8 @@ struct {
   double rampConst1, rampConst2, rampConst3; //same as turn
   double kP_c, kI_c, kD_c;                   //correction PID constants
   double minDiffPerSample;                           //minimum speed (inches or clicks per second) which will not trigger a timeout
-} dDefs;
+};
+extern DriveDefaults dDefs;
 //#endregion
 
 class ParallelDrive {
@@ -109,7 +111,7 @@ class ParallelDrive {
       //#subregion sensors
     void setEncoderConfig(encoderConfig config);
     void setAbsAngle(double angle=0, angleType format=DEGREES); //sets angleOffset so that current absAngle is equal to specified angle
-    Gyro* getGyroPtr();
+    Gyro getGyro();
     bool hasGyro();
       //#endsubregion
       //#subregion position tracking
@@ -132,7 +134,7 @@ class ParallelDrive {
     //#region sensors
     void updateEncConfig(); //automatically updates encConfig when a new encoder is attached
     encoderConfig encConfig;
-    Gyro* gyro;
+    Gyro gyro;
     int angleOffset;  //amount added to gyro values to obtain absolute angle (degrees)
     //#endregion
     //#region position tracking

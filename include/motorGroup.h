@@ -45,7 +45,7 @@ class MotorGroup {
     void setPotReversed(bool reversed);
     bool isPotDefault();
     void setDefaultSensor(bool potIsDefault);
-    Encoder getEncoderPtr();   //returns pointer to associated encoder or nullptr if no encoder is attached
+    Encoder getEncoderPtr();   //returns pointer to associated encoder
     unsigned char getPotPort(); //returns port of associated potentiometer or 0 if no potentiometer is attached
     bool hasEncoder();
     bool hasPotentiometer();

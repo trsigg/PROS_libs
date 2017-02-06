@@ -57,16 +57,13 @@
   //#subregion constants
   #define WHEEL_DIAMETER 2.75
   //#endsubregion
-#endif
-//#endregion
-
-//#region general
-  //#subregion externs
+  //#region global externs
   extern ParallelDrive drive;
   extern ButtonGroup lift;
   extern MotorGroup clawL;
   extern MotorGroup clawR;
-  //#endsubregion
+  //#endregion
+#endif
 //#endregion
 
 #endif

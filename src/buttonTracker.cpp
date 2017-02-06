@@ -15,7 +15,7 @@ bool* ButtonTracker::getButtonPtr(unsigned char buttonGroup, unsigned char butto
 		return pressedButtons[joystick-1][buttonGroup-5][(int)log2(button)];
 		//log2 necessary because button identifiers correspond to 1, 2, 4, and 8
 	else
-		return nullptr;
+		return 0;	//TODO: be better than this
 }
 
 bool ButtonTracker::newlyPressed(unsigned char buttonGroup, unsigned char button, unsigned char joystick) {

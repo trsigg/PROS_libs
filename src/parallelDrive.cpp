@@ -4,6 +4,9 @@
 #include "quadRamp.h"
 #include "timer.h"
 
+DriveDefaults dDefs;
+TurnDefaults tDefs;
+
 void ParallelDrive::takeInput() {
   if (arcadeInput) {
     char moveVal = coeff * joystickGetAnalog(joystick, moveAxis);
@@ -343,7 +346,7 @@ bool ParallelDrive::maneuverExecuting() {
   return isDriving || isTurning;
 }
 
-void initializeDefaults() {
+void ParallelDrive::initializeDefaults() {
   //turning
   tDefs.defAngleType = DEGREES;
   tDefs.useGyro = true;
@@ -380,7 +383,7 @@ void ParallelDrive::setAbsAngle(double angle, angleType format) {
   angle = convertAngle(angle, format, DEGREES);
   angleOffset = angle - gyroVal();
 }
-Gyro* ParallelDrive::getGyroPtr() { return gyro; }
+Gyro ParallelDrive::getGyro() { return gyro; }
 bool ParallelDrive::hasGyro() { return gyro; }
   //#endsubregion
   //#subregion position tracking
