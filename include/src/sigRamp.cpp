@@ -1,5 +1,5 @@
 #include "sigRamp.h"
-#include "math.h"
+#include <cmath>
 
 SigRamp::SigRamp(double k, double M, double intercept) : k(k), M2(2*M), i(intercept) {
   C = 2 * M / i - 1;

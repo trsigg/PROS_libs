@@ -61,19 +61,11 @@
 //#endregion
 
 //#region general
-  //#subregion globals
-  std::vector<unsigned char> leftMotors = ld_mps;
-  std::vector<unsigned char> rightMotors = rd_mps;
-  std::vector<unsigned char> liftMotors = lift_mps;
-  std::vector<unsigned char> clawLmotors = clawL_mps;
-  std::vector<unsigned char> clawRmotors = clawR_mps;
-
-  ParallelDrive drive(leftMotors, rightMotors);
-
-  ButtonGroup lift(liftGroup, liftMotors, -10);
-
-  MotorGroup clawL(clawLmotors);
-  MotorGroup clawR(clawRmotors);
+  //#subregion externs
+  extern ParallelDrive drive;
+  extern ButtonGroup lift;
+  extern MotorGroup clawL;
+  extern MotorGroup clawR;
   //#endsubregion
 //#endregion
 

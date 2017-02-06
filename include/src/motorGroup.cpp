@@ -1,5 +1,5 @@
 #include "motorGroup.h"		//also includes vector and API
-#include "coreIncludes.h"	//also includes math.h
+#include "coreIncludes.h"	//also includes cmath
 #include "PID.h"
 #include "Timer.h"
 
@@ -28,7 +28,7 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors) : motors(motors) {
 MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff)
 												: motors(motors), encoder(encoder), encCoeff(coeff) {
 	maneuverTimer = new Timer();
-	encoderReset(*encoder);
+	encoderReset(encoder);
 }
 
 MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed)
@@ -41,7 +41,7 @@ MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort,
 void MotorGroup::addSensor(Encoder enc, double coeff, bool setAsDefault) {
 	encoder = enc;
 	encCoeff = coeff;
-	encoderReset(*enc);
+	encoderReset(enc);
 	if (setAsDefault) potIsDefault = false;
 }
 
@@ -53,13 +53,13 @@ void MotorGroup::addSensor(unsigned char port, bool reversed, bool setAsDefault)
 
 int MotorGroup::encoderVal(bool rawValue) {
 	if (hasEncoder()) {
-		return encoderGet(*encoder) * (rawValue ? 1 : encCoeff);
+		return encoderGet(encoder) * (rawValue ? 1 : encCoeff);
 	}
 
 	return 0;	//possible debug location
 }
 
-void MotorGroup::resetEncoder() { encoderReset(*encoder); }	//possible debug location
+void MotorGroup::resetEncoder() { encoderReset(encoder); }	//possible debug location
 
 int MotorGroup::potVal() {
 	if (hasPotentiometer()) {

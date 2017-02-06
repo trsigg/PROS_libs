@@ -1,7 +1,7 @@
 #include "joystickGroup.h"
 #include "timer.h"
-#include "math.h"
-#include "API.h"
+#include <cmath>
+#include <API.h>
 
 char JoystickGroup::takeInput() {
 	char power = 0;

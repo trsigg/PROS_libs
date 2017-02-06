@@ -1,5 +1,5 @@
 #include "main.h"
-#include "config.h"
+#include "config.h"	//also includes parallelDrive and buttonGroup
 
 void operatorControl() {
 	while (true) {

@@ -1,7 +1,7 @@
 #include "buttonGroup.h"
 #include "buttonTracker.h"
-#include "math.h"
-#include "API.h"
+#include <cmath>
+#include <API.h>
 
 char ButtonGroup::takeInput() {
   char power = 0;
@@ -50,7 +50,7 @@ void ButtonGroup::configureInput(unsigned char buttonGroup, char stillSpeed, uns
   setMovementPower(power, downPower);
 }
 
-void ButtonGroup::configureMultiGroupInput(unsigned char upGroup, unsigned char upButton, unsigned char downGroup, unsigned char downButton, char stillSpeed, char power, char downPower, unsigned char upJoystick, unsigned char upJoystick) {
+void ButtonGroup::configureMultiGroupInput(unsigned char upGroup, unsigned char upButton, unsigned char downGroup, unsigned char downButton, char stillSpeed, char power, char downPower, unsigned char upJoystick, unsigned char downJoystick) {
   active = true;
 
   this->upJoystick = upJoystick;

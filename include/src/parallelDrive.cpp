@@ -1,4 +1,4 @@
-#include "parallelDrive.h"  //also includes coreIncludes, math, vector, and API
+#include "parallelDrive.h"  //also includes coreIncludes, cmath, vector, and API
 #include "joystickGroup.h"
 #include "PID.h"
 #include "quadRamp.h"
@@ -112,7 +112,7 @@ void ParallelDrive::resetEncoders() {
 
 double ParallelDrive::gyroVal(angleType format) {
   if (hasGyro())
-    return convertAngle(gyroGet(*gyro), DEGREES, format);
+    return convertAngle(gyroGet(gyro), DEGREES, format);
 
   return 0; //possible debug location
 }
@@ -121,7 +121,7 @@ void ParallelDrive::resetGyro() {
   angleOffset += gyroVal();
 
   if (hasGyro())  //possible debug location
-    return gyroReset(*gyro);
+    return gyroReset(gyro);
 }
 
 double ParallelDrive::absAngle(angleType format) {

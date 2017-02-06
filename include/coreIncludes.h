@@ -3,10 +3,10 @@
 #ifndef COREINCLUDES_INCLUDED
 #define COREINCLUDES_INCLUDED
 
-#include "math.h"
+#include <cmath>
 
 const double PI = acos(-1);
-/* Because math doesn't have a pi constant for some reason */
+/* Because cmath doesn't have a pi constant for some reason */
 
 enum angleType { DEGREES, RADIANS };
 /*Used for specifying the format of an angle.
