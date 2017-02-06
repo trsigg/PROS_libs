@@ -18,10 +18,10 @@ class ButtonGroup : public MotorGroup {
       will always be given a sign opposite to that of upPower. */
     void configureMultiGroupInput(unsigned char upGroup, unsigned char upButton, unsigned char downGroup, unsigned char downButton, char stillSpeed=0, char power=127, char downPower=0, unsigned char upJoystick1=1, unsigned char downJoystick=1); //input system with buttons from multiple groups
 
-    ButtonGroup(std::vector<unsigned char> motors);
-    ButtonGroup(unsigned char buttonGroup, std::vector<unsigned char> motors, char stillSpeed=0, unsigned char buttonConfig=0, char power=127, char downPower=0, unsigned char joystick=1);
-    ButtonGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff=1);
-    ButtonGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false);
+    ButtonGroup(unsigned char numMotors, unsigned char motors[]);
+    ButtonGroup(unsigned char numMotors, unsigned char buttonGroup, unsigned char motors[], char stillSpeed=0, unsigned char buttonConfig=0, char power=127, char downPower=0, unsigned char joystick=1);
+    ButtonGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff=1);
+    ButtonGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed=false);
 
     //accessors and mutators
       //state

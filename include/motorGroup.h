@@ -7,7 +7,6 @@
 #ifndef MOTOR_GROUP_INCLUDED
 #define MOTOR_GROUP_INCLUDED
 
-#include <vector>
 #include <API.h>
 
 class PID;
@@ -20,9 +19,9 @@ class MotorGroup {
       If overrideAbsolutes is true, ignores absolute minimums and maximums */
     char getPower();  //returns the last set power of the motors in the group
 
-    MotorGroup(std::vector<unsigned char> motors);  //TODO: should these vectors be passed as pointers?
-    MotorGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff=1);
-    MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false);
+    MotorGroup(unsigned char numMotors, unsigned char motors[]); //I can't use vectors, so...
+    MotorGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff=1);
+    MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed=false);
     //sensors
     void addSensor(Encoder enc, double coeff=1, bool setAsDefault=true); //associates a sensor with the group. If setAsDefault is true, potIsDefault is adjusted accordingly
     void addSensor(unsigned char port, bool reversed=false, bool setAsDefault=true);
@@ -64,7 +63,8 @@ class MotorGroup {
     char getMaxPowerAtAbs();
     void setMaxPowerAtAbs(char power);
   private:
-    std::vector<unsigned char> motors;  //vector (variable-length array) of motors in group
+    unsigned char numMotors;
+    unsigned char* motors;      //array of motors in group
     //absolutes
     int absMin, absMax;         //the maximum and minimum potentiometer values for which the motor group will set motor powers above a certain threshold
     char maxPowerAtAbs;         //see below

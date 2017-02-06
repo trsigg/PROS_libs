@@ -36,23 +36,29 @@ void ParallelDrive::setDrivePower(char left, char right) {
   initializeDefaults();
 }*/
 
-ParallelDrive::ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio) {
+ParallelDrive::ParallelDrive(unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio) {
   double coeff = PI * wheelDiameter * gearRatio / 360;
 
-  leftDrive = new JoystickGroup(leftMotors, leftEnc, coeff);
-  rightDrive = new JoystickGroup(rightMotors, rightEnc, coeff);
+  leftDrive = new JoystickGroup(numMotors/2, leftMotors, leftEnc, coeff);
+  rightDrive = new JoystickGroup(numMotors/2, rightMotors, rightEnc, coeff);
   updateEncConfig();
 
   initializeDefaults();
 }
 
-ParallelDrive::ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff, double powMap, unsigned char maxAcc100ms, unsigned char deadband, unsigned char leftAxis, unsigned char rightAxis, unsigned char joystick) {
+ParallelDrive::ParallelDrive(unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], double coeff, double powMap, unsigned char maxAcc100ms, unsigned char deadband, unsigned char leftAxis, unsigned char rightAxis, unsigned char joystick) {
+  leftDrive = new JoystickGroup(numMotors/2, leftMotors);
+  rightDrive = new JoystickGroup(numMotors/2, rightMotors);
+
   configureTankInput(coeff, powMap, maxAcc100ms, deadband, leftAxis, rightAxis, joystick);
 
   initializeDefaults();
 }
 
-ParallelDrive::ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff) {
+ParallelDrive::ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], double coeff) {
+  leftDrive = new JoystickGroup(numMotors/2, leftMotors);
+  rightDrive = new JoystickGroup(numMotors/2, rightMotors);
+
   configureArcadeInput(movementAxis, turningAxis, coeff);
 
   initializeDefaults();

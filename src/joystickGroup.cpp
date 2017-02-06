@@ -54,19 +54,19 @@ void JoystickGroup::configureInput(unsigned char axis, double coeff, double powM
 }
 
 //#region constructors
-JoystickGroup::JoystickGroup(std::vector<unsigned char> motors) : MotorGroup(motors) {
+JoystickGroup::JoystickGroup(unsigned char numMotors, unsigned char motors[]) : MotorGroup(numMotors, motors) {
   active = false;
 }
 
-JoystickGroup::JoystickGroup(unsigned char axis, std::vector<unsigned char> motors, double coeff, double powMap, unsigned char maxAcc100ms, unsigned char deadband, unsigned char joystick) : MotorGroup(motors) {
+JoystickGroup::JoystickGroup(unsigned char numMotors, unsigned char axis, unsigned char motors[], double coeff, double powMap, unsigned char maxAcc100ms, unsigned char deadband, unsigned char joystick) : MotorGroup(numMotors, motors) {
   configureInput(axis, coeff, powMap, maxAcc100ms, deadband, joystick);
 }
 
-JoystickGroup::JoystickGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff) : MotorGroup(motors, encoder, coeff) {
+JoystickGroup::JoystickGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff) : MotorGroup(numMotors, motors, encoder, coeff) {
   active = false;
 }
 
-JoystickGroup::JoystickGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed) : MotorGroup(motors, potPort, potReversed) {
+JoystickGroup::JoystickGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed) : MotorGroup(numMotors, motors, potPort, potReversed) {
   active = false;
 }
 //#endregion

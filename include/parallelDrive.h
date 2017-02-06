@@ -8,7 +8,6 @@
 #define PARALLEL_DRIVE_INCLUDED
 
 #include "coreIncludes.h" //also includes cmath
-#include <vector>
 #include <API.h>
 
 class JoystickGroup;
@@ -67,10 +66,10 @@ class ParallelDrive {
     //#endregion
 
     //#region constructors
-    //remove? ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors);
-    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio=1);
-    ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
-    ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors, double coeff=1);  //configures arcade input
+    //remove? ParallelDrive(unsigned char leftMotors[], unsigned char rightMotors[]);
+    ParallelDrive(unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio=1);
+    ParallelDrive(unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
+    ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1);  //configures arcade input
     //#endregion
 
     //#region input config

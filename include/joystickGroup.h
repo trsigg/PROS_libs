@@ -12,10 +12,10 @@ class JoystickGroup : public MotorGroup {
     //sets up joystick
     void configureInput(unsigned char axis, double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char joystick=1);
 
-    JoystickGroup(std::vector<unsigned char> motors);
-    JoystickGroup(unsigned char axis, std::vector<unsigned char> motors, double coeff=1, double powMap=1, unsigned char maxAcc100ms=127, unsigned char deadband=10, unsigned char joystick=1);
-    JoystickGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff=1);
-    JoystickGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed=false);
+    JoystickGroup(unsigned char numMotors, unsigned char motors[]);
+    JoystickGroup(unsigned char numMotors, unsigned char axis, unsigned char motors[], double coeff=1, double powMap=1, unsigned char maxAcc100ms=127, unsigned char deadband=10, unsigned char joystick=1);
+    JoystickGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff=1);
+    JoystickGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed=false);
 
     //accessors and mutators
       //state

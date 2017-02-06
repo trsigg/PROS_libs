@@ -5,5 +5,6 @@ void operatorControl() {
 	while (true) {
 		lift.takeInput();
 		drive.takeInput();
+		motorSet(4, joystickGetAnalog(1, 2));
 	}
 }

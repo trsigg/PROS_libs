@@ -1,4 +1,4 @@
-#include "motorGroup.h"		//also includes vector and API
+#include "motorGroup.h"		//also includes API
 #include "coreIncludes.h"	//also includes cmath
 #include "PID.h"
 #include "Timer.h"
@@ -14,27 +14,27 @@ void MotorGroup::setPower(char power, bool overrideAbsolutes) {
 
 	/*for (unsigned char motor : motors) //set motors
 		motorSet(motor, power);*/
-		for (std::vector<unsigned char>::iterator it = motors.begin(); it != motors.end(); ++it)	//I'm sorry. c++98 sucks
-	    motorSet(*it, power);
+	for (unsigned char motor=0; motor<numMotors; motor++)	//I'm sorry. c++98 sucks
+	  motorSet(motors[motor], power);
 }
 
 char MotorGroup::getPower() {
-	return motorGet(motors.front());	//return power of first motor in group
+	return motorGet(motors[0]);	//return power of first motor in group
 }
 
 //#region constructors
-MotorGroup::MotorGroup(std::vector<unsigned char> motors) : motors(motors) {
-	maneuverTimer = new Timer();
+MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[]) : numMotors(numMotors), motors(motors) {
+	maneuverTimer = new Timer;
 }
 
-MotorGroup::MotorGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff)
-												: motors(motors), encoder(encoder), encCoeff(coeff) {
-	maneuverTimer = new Timer();
+MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff)
+												: numMotors(numMotors), motors(motors), encoder(encoder), encCoeff(coeff) {
+	maneuverTimer = new Timer;
 	encoderReset(encoder);
 }
 
-MotorGroup::MotorGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed)
-												: motors(motors), potPort(potPort), potReversed(potReversed) {
+MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed)
+												: numMotors(numMotors), motors(motors), potPort(potPort), potReversed(potReversed) {
 	maneuverTimer = new Timer();
 }
 //#endregion

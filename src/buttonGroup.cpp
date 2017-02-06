@@ -70,19 +70,19 @@ void ButtonGroup::configureMultiGroupInput(unsigned char upGroup, unsigned char 
 }
 
 //#region constructors
-ButtonGroup::ButtonGroup(std::vector<unsigned char> motors) : MotorGroup(motors) {
+ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char motors[]) : MotorGroup(numMotors, motors) {
   active = false;
 }
 
-ButtonGroup::ButtonGroup(unsigned char buttonGroup, std::vector<unsigned char> motors, char stillSpeed, unsigned char buttonConfig, char power, char downPower, unsigned char joystick) : MotorGroup(motors) {
+ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char buttonGroup, unsigned char motors[], char stillSpeed, unsigned char buttonConfig, char power, char downPower, unsigned char joystick) : MotorGroup(numMotors, motors) {
   configureInput(buttonGroup, stillSpeed, buttonConfig, power, downPower, joystick);
 }
 
-ButtonGroup::ButtonGroup(std::vector<unsigned char> motors, Encoder encoder, double coeff) : MotorGroup(motors, encoder, coeff) {
+ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff) : MotorGroup(numMotors, motors, encoder, coeff) {
   active = false;
 }
 
-ButtonGroup::ButtonGroup(std::vector<unsigned char> motors, unsigned char potPort, bool potReversed) : MotorGroup(motors, potPort, potReversed) {
+ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed) : MotorGroup(numMotors, motors, potPort, potReversed) {
   active = false;
 }
 //#endregion
