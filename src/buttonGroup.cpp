@@ -70,11 +70,11 @@ void ButtonGroup::configureMultiGroupInput(unsigned char upGroup, unsigned char 
 }
 
 //#region constructors
-ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char motors[]) : MotorGroup(numMotors, motors) {
+/*ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char motors[]) : MotorGroup(numMotors, motors) {
   active = false;
-}
+}*/
 
-ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char buttonGroup, unsigned char motors[], char stillSpeed, unsigned char buttonConfig, char power, char downPower, unsigned char joystick) : MotorGroup(numMotors, motors) {
+ButtonGroup::ButtonGroup(unsigned char buttonGroup, unsigned char numMotors, unsigned char motors[], char stillSpeed, unsigned char buttonConfig, char power, char downPower, unsigned char joystick) : MotorGroup(numMotors, motors) {
   configureInput(buttonGroup, stillSpeed, buttonConfig, power, downPower, joystick);
 }
 

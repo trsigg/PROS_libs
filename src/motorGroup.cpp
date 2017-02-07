@@ -4,13 +4,13 @@
 #include "Timer.h"
 
 void MotorGroup::setPower(char power, bool overrideAbsolutes) {
-	if (!overrideAbsolutes) {
+	/*if (!overrideAbsolutes) {
 		if (hasAbsMin && getPosition() <= absMin && power < -maxPowerAtAbs)
 			power = -defPowerAtAbs;
 
 		if (hasAbsMax && getPosition() >= absMax && power > maxPowerAtAbs)
 			power = defPowerAtAbs;
-	}
+	}*/
 
 	/*for (unsigned char motor : motors) //set motors
 		motorSet(motor, power);*/

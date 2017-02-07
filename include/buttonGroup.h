@@ -19,7 +19,7 @@ class ButtonGroup : public MotorGroup {
     void configureMultiGroupInput(unsigned char upGroup, unsigned char upButton, unsigned char downGroup, unsigned char downButton, char stillSpeed=0, char power=127, char downPower=0, unsigned char upJoystick1=1, unsigned char downJoystick=1); //input system with buttons from multiple groups
 
     ButtonGroup(unsigned char numMotors, unsigned char motors[]);
-    ButtonGroup(unsigned char numMotors, unsigned char buttonGroup, unsigned char motors[], char stillSpeed=0, unsigned char buttonConfig=0, char power=127, char downPower=0, unsigned char joystick=1);
+    ButtonGroup(unsigned char buttonGroup, unsigned char numMotors, unsigned char motors[], char stillSpeed=0, unsigned char buttonConfig=0, char power=127, char downPower=0, unsigned char joystick=1);
     ButtonGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff=1);
     ButtonGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed=false);
 

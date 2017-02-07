@@ -29,13 +29,6 @@ void ParallelDrive::setDrivePower(char left, char right) {
 //#endregion
 
 //#region constructors
-/*remove? ParallelDrive::ParallelDrive(std::vector<unsigned char> leftMotors, std::vector<unsigned char> rightMotors) {
-  leftDrive = new JoystickGroup(leftMotors);
-  rightDrive = new JoystickGroup(rightMotors);
-
-  initializeDefaults();
-}*/
-
 ParallelDrive::ParallelDrive(unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio) {
   double coeff = PI * wheelDiameter * gearRatio / 360;
 
