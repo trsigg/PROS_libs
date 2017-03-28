@@ -21,7 +21,7 @@
   //#subregion motors
   //initializer lists of motor ports (mps = motor ports)
   //drive
-  #define ld_mps  { 1, 5, 5 }      //left
+  #define ld_mps  { 1, 5, 5 }   //left
   #define rd_mps  { 3, 8, 10 }  //right
   //lift
   #define lift_mps  { 2, 6, 9 }

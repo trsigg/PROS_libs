@@ -8,7 +8,7 @@ ParallelDrive drive(2 * std::min(sizeof(leftMotors), sizeof(rightMotors))/sizeof
 
 //lift
 unsigned char liftMotors[] = lift_mps;
-ButtonGroup lift(sizeof(liftMotors)/sizeof(unsigned char), liftGroup, liftMotors, -10);
+ButtonGroup lift(liftGroup, sizeof(liftMotors)/sizeof(unsigned char), liftMotors, -10);
 
 //claw
 unsigned char clawLmotors[] = clawL_mps;
