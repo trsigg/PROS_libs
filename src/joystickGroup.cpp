@@ -19,15 +19,19 @@ char JoystickGroup::takeInput() {
   		char currentPower = getPower();
 
   		if (elapsed > msPerPowerChange) {
-  			char maxDiff = elapsed / msPerPowerChange;
+				lastUpdated = now;
 
-  			if (abs(currentPower - power) < maxDiff) {
-  				lastUpdated = now;
-  			} else {
-          power = (power>currentPower ? currentPower+maxDiff : currentPower-maxDiff);
-  			  lastUpdated = now - (elapsed % msPerPowerChange);
-  			}
-  		}
+				if (abs(power) > abs(currentPower)) {	//only ramp up in absolute value
+					char maxDiff = elapsed / msPerPowerChange;
+
+					if (abs(currentPower - power) > maxDiff) {
+						power = (power>currentPower ? currentPower+maxDiff : currentPower-maxDiff);
+	  			  lastUpdated = now - (elapsed % msPerPowerChange);
+					}
+				}
+  		} else {
+				power = currentPower;
+			}
   	}
   }
 

@@ -11,7 +11,7 @@ unsigned char liftMotors[] = lift_mps;
 ButtonGroup lift(sizeof(liftMotors)/sizeof(unsigned char), liftGroup, liftMotors, -10);
 
 //claw
-unsigned char clawLmotors[] = clawR_mps;
-unsigned char clawRmotors[] = clawL_mps;
+unsigned char clawLmotors[] = clawL_mps;
+unsigned char clawRmotors[] = clawR_mps;
 MotorGroup clawL(sizeof(clawLmotors)/sizeof(unsigned char), clawLmotors);
 MotorGroup clawR(sizeof(clawRmotors)/sizeof(unsigned char), clawRmotors);
