@@ -3,7 +3,7 @@
 #ifndef CONFIG_INCLUDED
 #define CONFIG_INCLUDED
 
-#define E_TEAM
+#define TEST_BOT
 
 //#region defaults
 #define NUM_JOYSTICKS 1
@@ -12,8 +12,8 @@
 //#endregion
 
 
-//#region E-team
-#ifdef E_TEAM
+//#region Test bot
+#ifdef TEST_BOT
   //#subregion includes
   #include "parallelDrive.h"
   #include "buttonGroup.h"
@@ -21,47 +21,29 @@
   //#subregion motors
   //initializer lists of motor ports (mps = motor ports)
   //drive
-  #define ld_mps  { 1, 5, 5 }   //left
-  #define rd_mps  { 3, 8, 10 }  //right
+  #define ld_mps  { 1 }   //left
+  #define rd_mps  { 9 }  //right
   //lift
-  #define lift_mps  { 2, 6, 9 }
-  //claw
-  #define clawR_mps { 4 }
-  #define clawL_mps { 7 }
+  #define lift_mps  { 10 }
   //#endsubregion
   //#subregion sensors
   //lift
-  #define liftPot   2
-  //claw
-  #define clawPotR  3
-  #define clawPotL  4
+  #define liftPot   1
   //drive
-  #define hyro      1
-  #define rightEnc  1, 2, false
-  #define leftEnc   3, 4, false
-  //autonomous
-  #define sidePot   5
-  #define modePot   6
+  #define hyro      5
+  #define rightEnc  3, 4, false
+  #define leftEnc   1, 2, false
   //#endsubregion
   //#subregion buttons
   //lift
   #define liftGroup 5
-  //claw
-  #define openClawBtn     1, 6, JOY_UP
-  #define closeClawBtn    1, 6, JOY_DOWN
-  #define hyperextendBtn  1, 7, JOY_RIGHT
-  //toggle
-  #define toggleAutoDumpGroup 8
-  #define toggleClawModeGroup 7
   //#endsubregion
   //#subregion constants
-  #define WHEEL_DIAMETER 2.75
+  #define WHEEL_DIAMETER 4.0
   //#endsubregion
   //#region global externs
   extern ParallelDrive drive;
   extern ButtonGroup lift;
-  extern MotorGroup clawL;
-  extern MotorGroup clawR;
   //#endregion
 #endif
 //#endregion

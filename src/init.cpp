@@ -1,7 +1,13 @@
 #include "main.h"
 #include "config.h"
 
-void initializeIO() {}
+extern "C" {
+  void __libc_init_array();
+}
+
+void initializeIO() {
+  __libc_init_array();
+}
 
 void initialize() {
   //#region sensor configuration
@@ -10,8 +16,5 @@ void initialize() {
   //drive.addSensor(encoderInit(rightEnc), RIGHT, WHEEL_DIAMETER);
 
   lift.addSensor(liftPot);
-
-  clawL.addSensor(clawPotL);
-  clawR.addSensor(clawPotR);
   //#endregion
 }

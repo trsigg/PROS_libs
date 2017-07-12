@@ -19,7 +19,7 @@ class MotorGroup {
       If overrideAbsolutes is true, ignores absolute minimums and maximums */
     char getPower();  //returns the last set power of the motors in the group
 
-    MotorGroup(unsigned char numMotors, unsigned char motors[]); //I can't use vectors, so...
+    MotorGroup(unsigned char numMotors, unsigned char motors[]);
     MotorGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff=1);
     MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed=false);
     //sensors

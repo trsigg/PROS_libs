@@ -66,9 +66,9 @@ class ParallelDrive {
     //#endregion
 
     //#region constructors
-    ParallelDrive(unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio=1);
-    ParallelDrive(unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
-    ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, unsigned char numMotors, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1);  //configures arcade input
+    ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio=1);
+    ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
+    ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1);  //configures arcade input
     //#endregion
 
     //#region input config

@@ -12,7 +12,7 @@ void MotorGroup::setPower(char power, bool overrideAbsolutes) {
 			power = defPowerAtAbs;
 	}*/
 
-	for (unsigned char motor=0; motor<numMotors; motor++)	//I'm sorry. c++98 sucks
+	for (unsigned char motor=0; motor<numMotors; motor++)
 	  motorSet(motors[motor], power);
 }
 
