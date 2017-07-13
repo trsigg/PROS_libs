@@ -23,27 +23,27 @@
   //drive
   #define LD_MPS  { 1 }   //left
   #define RD_MPS  { 9 }  //right
-  //lift
-  #define LIFT_MPS  { 10 }
+  //flapper
+  #define FLAPPER_MPS  { 10 }
   //#endsubregion
   //#subregion sensors
-  //lift
-  #define LIFT_POT  1
+  //flapper
+  #define FLAPPER_POT  1
   //drive
-  #define HYRO      5
-  #define RIGHT_ENC 3, 4, false
-  #define LEFT_ENC  1, 2, false
+  #define HYRO        5
+  #define RIGHT_ENC   3, 4, false
+  #define LEFT_ENC    1, 2, false
   //#endsubregion
   //#subregion buttons
-  //lift
-  #define LIFT_GROUP 6
+  //flapper
+  #define FLAPPER_GROUP 6
   //#endsubregion
   //#subregion constants
   #define WHEEL_DIAMETER 4.0
   //#endsubregion
   //#region global externs
   extern ParallelDrive drive;
-  extern ButtonGroup lift;
+  extern ButtonGroup flapper;
   //#endregion
 #endif
 //#endregion

@@ -15,6 +15,6 @@ void initialize() {
   drive.addSensor(LEFT_ENC, LEFT, WHEEL_DIAMETER);
   drive.addSensor(RIGHT_ENC, RIGHT);
 
-  lift.addSensor(LIFT_POT);
+  flapper.addSensor(FLAPPER_POT);
   //#endregion
 }

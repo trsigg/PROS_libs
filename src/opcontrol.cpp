@@ -3,7 +3,7 @@
 
 void operatorControl() {
 	while (true) {
-		lift.takeInput();
+		flapper.takeInput();
 		drive.takeInput();
 	}
 }
