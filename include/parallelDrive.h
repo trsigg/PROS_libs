@@ -77,7 +77,7 @@ class ParallelDrive {
     //#endregion
     //#region sensors
     void addSensor(unsigned char encPort1, unsigned char encPort2, bool reversed, encoderConfig side, double wheelDiameter=0, double gearRatio=1); //encCoeff calculated from diameter and gear ratio (from wheel to encoder)
-    void addSensor(Gyro gyro, gyroCorrectionType correction=MEDIUM, bool setAbsAngle=true);
+    void addSensor(unsigned char gyroPort, gyroCorrectionType correction=MEDIUM, unsigned short multiplier=0);
     double encoderVal(encoderConfig side=UNASSIGNED, bool rawValue=false, bool absolute=true);
     /* Returns the result of calling encoderVal() on motor group of specified
         side. When side is UNASSIGNED, encConfig is used to determine which
@@ -109,7 +109,6 @@ class ParallelDrive {
       //#subregion sensors
     void setEncoderConfig(encoderConfig config);
     void setAbsAngle(double angle=0, angleType format=DEGREES); //sets angleOffset so that current absAngle is equal to specified angle
-    Gyro getGyro();
     bool hasGyro();
       //#endsubregion
       //#subregion position tracking

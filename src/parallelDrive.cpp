@@ -99,6 +99,11 @@ void ParallelDrive::addSensor(unsigned char encPort1, unsigned char encPort2, bo
   updateEncConfig();
 }
 
+void ParallelDrive::addSensor(unsigned char gyroPort, gyroCorrectionType correction, unsigned short multiplier) {
+  gyro = gyroInit(gyroPort, multiplier);
+  gyroCorrection = correction;
+}
+
 double ParallelDrive::encoderVal(encoderConfig side, bool rawValue, bool absolute) {
   if (side == UNASSIGNED)
 		side = encConfig;
@@ -391,8 +396,7 @@ void ParallelDrive::setAbsAngle(double angle, angleType format) {
   angle = convertAngle(angle, format, DEGREES);
   angleOffset = angle - gyroVal();
 }
-Gyro ParallelDrive::getGyro() { return gyro; }
-bool ParallelDrive::hasGyro() { return gyro; }
+bool ParallelDrive::hasGyro() { return gyro; }  //TODO: verify that this works
   //#endsubregion
   //#subregion position tracking
 void ParallelDrive::setWidth(double inches) { width = inches; }

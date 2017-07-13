@@ -8,7 +8,6 @@
 //#region defaults
 #define NUM_JOYSTICKS 1
 #define DEBUG_LEVEL 0 //0 is not debugging, higher levels yield increasingly detailed output (currently non-functional)
-#define DEF_GYRO_MULTIPLIER 196
 //#endregion
 
 

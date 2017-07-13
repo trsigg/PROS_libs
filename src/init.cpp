@@ -11,7 +11,7 @@ void initializeIO() {
 
 void initialize() {
   //#region sensor configuration
-  //drive.addSensor(gyroInit(hyro, DEF_GYRO_MULTIPLIER));
+  drive.addSensor(HYRO);
   drive.addSensor(LEFT_ENC, LEFT, WHEEL_DIAMETER);
   drive.addSensor(RIGHT_ENC, RIGHT);
 
