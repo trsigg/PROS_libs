@@ -347,7 +347,7 @@ double ParallelDrive::maneuverProgress(angleType format) {
     return totalDist;
   } else if (isTurning) {
     if (usingGyro)
-      return gyroVal(format);
+      return abs(gyroVal(format));
     else
       return encoderVal();
   }
