@@ -12,9 +12,9 @@ void initializeIO() {
 void initialize() {
   //#region sensor configuration
   //drive.addSensor(gyroInit(hyro, DEF_GYRO_MULTIPLIER));
-  //drive.addSensor(encoderInit(leftEnc), LEFT);
-  //drive.addSensor(encoderInit(rightEnc), RIGHT, WHEEL_DIAMETER);
+  drive.addSensor(LEFT_ENC, LEFT, WHEEL_DIAMETER);
+  drive.addSensor(RIGHT_ENC, RIGHT);
 
-  lift.addSensor(liftPot);
+  lift.addSensor(LIFT_POT);
   //#endregion
 }

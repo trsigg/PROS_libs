@@ -66,7 +66,7 @@ class ParallelDrive {
     //#endregion
 
     //#region constructors
-    ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio=1);
+    ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], unsigned char lEncPort1, unsigned char lEncPort2, bool lReversed, unsigned char rEncPort1, unsigned char rEncPort2, bool rReversed, double wheelDiameter, double gearRatio=1);
     ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1, double powMap=1, unsigned char maxAcc100ms=0, unsigned char deadband=10, unsigned char leftAxis=3, unsigned char rightAxis=2, unsigned char joystick=1); //configures tank input
     ParallelDrive(unsigned char movementAxis, unsigned char turningAxis, unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], double coeff=1);  //configures arcade input
     //#endregion
@@ -76,7 +76,7 @@ class ParallelDrive {
     void configureArcadeInput(unsigned char movementAxis=1, unsigned char turningAxis=2, double coeff=1);
     //#endregion
     //#region sensors
-    void addSensor(Encoder encoder, encoderConfig side, double wheelDiameter=3.25, double gearRatio=1); //encCoeff calculated from diameter and gear ratio (from wheel to encoder)
+    void addSensor(unsigned char encPort1, unsigned char encPort2, bool reversed, encoderConfig side, double wheelDiameter=0, double gearRatio=1); //encCoeff calculated from diameter and gear ratio (from wheel to encoder)
     void addSensor(Gyro gyro, gyroCorrectionType correction=MEDIUM, bool setAbsAngle=true);
     double encoderVal(encoderConfig side=UNASSIGNED, bool rawValue=false, bool absolute=true);
     /* Returns the result of calling encoderVal() on motor group of specified
@@ -130,6 +130,7 @@ class ParallelDrive {
     unsigned char moveAxis, turnAxis, joystick;
     //#endregion
     //#region sensors
+    double wheelDiameter; //used for calculating encoder coefficients
     void updateEncConfig(); //automatically updates encConfig when a new encoder is attached
     encoderConfig encConfig;
     Gyro gyro;

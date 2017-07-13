@@ -66,7 +66,7 @@ JoystickGroup::JoystickGroup(unsigned char numMotors, unsigned char axis, unsign
   configureInput(axis, coeff, powMap, maxAcc100ms, deadband, joystick);
 }
 
-JoystickGroup::JoystickGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff) : MotorGroup(numMotors, motors, encoder, coeff) {
+JoystickGroup::JoystickGroup(unsigned char numMotors, unsigned char motors[], unsigned char encPort1, unsigned char encPort2, double coeff) : MotorGroup(numMotors, motors, encPort1, encPort2, coeff) {
   active = false;
 }
 

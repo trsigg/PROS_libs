@@ -25,10 +25,10 @@ MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[]) : numMot
 	maneuverTimer = new Timer;
 }
 
-MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff)
-												: numMotors(numMotors), motors(motors), encoder(encoder), encCoeff(coeff) {
+MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char encPort1, unsigned char encPort2, double coeff)
+												: numMotors(numMotors), motors(motors), encCoeff(abs(coeff)) {
 	maneuverTimer = new Timer;
-	encoderReset(encoder);
+	encoder = encoderInit(encPort1, encPort2, coeff<0);
 }
 
 MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed)
@@ -38,15 +38,14 @@ MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned
 //#endregion
 
 //#region sensors
-void MotorGroup::addSensor(Encoder enc, double coeff, bool setAsDefault) {
-	encoder = enc;
-	encCoeff = coeff;
-	encoderReset(enc);
+void MotorGroup::addSensor(unsigned char encPort1, unsigned char encPort2, double coeff, bool setAsDefault) {
+	encoder = encoderInit(encPort1, encPort2, coeff<0);
+	encCoeff = abs(coeff);
 	if (setAsDefault) potIsDefault = false;
 }
 
-void MotorGroup::addSensor(unsigned char port, bool reversed, bool setAsDefault) {
-	potPort = port;
+void MotorGroup::addSensor(unsigned char potPort, bool reversed, bool setAsDefault) {
+	this->potPort = potPort;
 	potReversed = reversed;
 	if (setAsDefault) potIsDefault = true;
 }
@@ -138,9 +137,8 @@ bool MotorGroup::isPotReversed() { return potReversed; }
 void MotorGroup::setPotReversed(bool reversed) { potReversed = reversed; }
 bool MotorGroup::isPotDefault() { return potIsDefault; }
 void MotorGroup::setDefaultSensor(bool potIsDefault) { this->potIsDefault = potIsDefault; }
-Encoder MotorGroup::getEncoderPtr() { return encoder; }
 unsigned char MotorGroup::getPotPort() { return potPort; }
-bool MotorGroup::hasEncoder() { return encoder; }
+bool MotorGroup::hasEncoder() { return encoder; }  //TODO: verify that this works
 bool MotorGroup::hasPotentiometer() { return potPort; }
 	//#endsubregion
 	//#subregion automovement

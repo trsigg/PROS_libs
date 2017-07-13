@@ -29,11 +29,12 @@ void ParallelDrive::setDrivePower(char left, char right) {
 //#endregion
 
 //#region constructors
-ParallelDrive::ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], Encoder leftEnc, Encoder rightEnc, double wheelDiameter, double gearRatio) {
+ParallelDrive::ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], unsigned char lEncPort1, unsigned char lEncPort2, bool lReversed, unsigned char rEncPort1, unsigned char rEncPort2, bool rReversed, double wheelDiameter, double gearRatio)
+                              : wheelDiameter(wheelDiameter) {
   double coeff = PI * wheelDiameter * gearRatio / 360;
 
-  leftDrive = new JoystickGroup(numMotorsL, leftMotors, leftEnc, coeff);
-  rightDrive = new JoystickGroup(numMotorsR, rightMotors, rightEnc, coeff);
+  leftDrive = new JoystickGroup(numMotorsL, leftMotors, lEncPort1, lEncPort2, coeff * (lReversed ? -1 : 1));
+  rightDrive = new JoystickGroup(numMotorsR, rightMotors, rEncPort1, rEncPort2, coeff * (rReversed ? -1 : 1));
   updateEncConfig();
 
   initializeDefaults();
@@ -74,17 +75,25 @@ void ParallelDrive::configureArcadeInput(unsigned char movementAxis, unsigned ch
 //#endregion
 
 //#region sensors
-void ParallelDrive::addSensor(Encoder encoder, encoderConfig side, double wheelDiameter, double gearRatio) {
-  double coeff = PI * wheelDiameter * gearRatio / 360;
+void ParallelDrive::addSensor(unsigned char encPort1, unsigned char encPort2, bool reversed, encoderConfig side, double wheelDiameter, double gearRatio) {
+  if (wheelDiameter == 0) {
+    if (this->wheelDiameter != 0) {
+      wheelDiameter = this->wheelDiameter;
+    } else {
+      wheelDiameter = 3.25; //possible debug location
+    }
+  }
+
+  double coeff = PI * wheelDiameter * gearRatio / 360 * (reversed ? -1 : 1);
 
   if (side == LEFT) {
-    leftDrive->addSensor(encoder, coeff);
+    leftDrive->addSensor(encPort1, encPort2, coeff);
   } else if (side == RIGHT) {
-    rightDrive->addSensor(encoder, coeff);
+    rightDrive->addSensor(encPort1, encPort2, coeff);
   } else if (leftDrive->hasEncoder()) {
-    rightDrive->addSensor(encoder, coeff);
+    rightDrive->addSensor(encPort1, encPort2, coeff);
   } else {
-    leftDrive->addSensor(encoder, coeff); //possible debug location (if both encoders are attached)
+    leftDrive->addSensor(encPort1, encPort2, coeff); //possible debug location (if both encoders are attached)
   }
 
   updateEncConfig();

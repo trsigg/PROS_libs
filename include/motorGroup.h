@@ -20,11 +20,11 @@ class MotorGroup {
     char getPower();  //returns the last set power of the motors in the group
 
     MotorGroup(unsigned char numMotors, unsigned char motors[]);
-    MotorGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff=1);
+    MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char encPort1, unsigned char encPort2, double coeff=1);
     MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed=false);
     //sensors
-    void addSensor(Encoder enc, double coeff=1, bool setAsDefault=true); //associates a sensor with the group. If setAsDefault is true, potIsDefault is adjusted accordingly
-    void addSensor(unsigned char port, bool reversed=false, bool setAsDefault=true);
+    void addSensor(unsigned char encPort1, unsigned char encPort2, double coeff=1, bool setAsDefault=true); //associates a sensor with the group. If setAsDefault is true, potIsDefault is adjusted accordingly
+    void addSensor(unsigned char potPort, bool reversed=false, bool setAsDefault=true);
     int encoderVal(bool rawValue=false);                                  //if encoder is attached, returns encoder value of associated encoder (multiplied by encCoeff unless rawValue is true), otherwise, it returns 0
     void resetEncoder();                                                  //resets associated encoder to 0
     int potVal();                                                         //same as encoderVal(), but returns 4095 - the value of the potentiometer if potReversed is true
@@ -44,7 +44,6 @@ class MotorGroup {
     void setPotReversed(bool reversed);
     bool isPotDefault();
     void setDefaultSensor(bool potIsDefault);
-    Encoder getEncoderPtr();   //returns pointer to associated encoder
     unsigned char getPotPort(); //returns port of associated potentiometer or 0 if no potentiometer is attached
     bool hasEncoder();
     bool hasPotentiometer();

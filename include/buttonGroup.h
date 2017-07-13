@@ -20,7 +20,7 @@ class ButtonGroup : public MotorGroup {
 
     ButtonGroup(unsigned char numMotors, unsigned char motors[]);
     ButtonGroup(unsigned char buttonGroup, unsigned char numMotors, unsigned char motors[], char stillSpeed=0, unsigned char buttonConfig=0, char power=127, char downPower=0, unsigned char joystick=1);
-    ButtonGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff=1);
+    ButtonGroup(unsigned char numMotors, unsigned char motors[], unsigned char encPort1, unsigned char encPort2, double coeff=1);
     ButtonGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed=false);
 
     //accessors and mutators

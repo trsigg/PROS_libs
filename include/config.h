@@ -21,22 +21,22 @@
   //#subregion motors
   //initializer lists of motor ports (mps = motor ports)
   //drive
-  #define ld_mps  { 1 }   //left
-  #define rd_mps  { 9 }  //right
+  #define LD_MPS  { 1 }   //left
+  #define RD_MPS  { 9 }  //right
   //lift
-  #define lift_mps  { 10 }
+  #define LIFT_MPS  { 10 }
   //#endsubregion
   //#subregion sensors
   //lift
-  #define liftPot   1
+  #define LIFT_POT  1
   //drive
-  #define hyro      5
-  #define rightEnc  3, 4, false
-  #define leftEnc   1, 2, false
+  #define HYRO      5
+  #define RIGHT_ENC 3, 4, false
+  #define LEFT_ENC  1, 2, false
   //#endsubregion
   //#subregion buttons
   //lift
-  #define liftGroup 5
+  #define LIFT_GROUP 6
   //#endsubregion
   //#subregion constants
   #define WHEEL_DIAMETER 4.0

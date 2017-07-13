@@ -3,7 +3,9 @@ Thumbs.db
 ehthumbs.db
 
 # C project files
-*.o
+**/*.o
+*.bin
+*.elf
 
 # Folder config file
 Desktop.ini

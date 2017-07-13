@@ -78,7 +78,7 @@ ButtonGroup::ButtonGroup(unsigned char buttonGroup, unsigned char numMotors, uns
   configureInput(buttonGroup, stillSpeed, buttonConfig, power, downPower, joystick);
 }
 
-ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char motors[], Encoder encoder, double coeff) : MotorGroup(numMotors, motors, encoder, coeff) {
+ButtonGroup::ButtonGroup(unsigned char numMotors, unsigned char motors[], unsigned char encPort1, unsigned char encPort2, double coeff) : MotorGroup(numMotors, motors, encPort1, encPort2, coeff) {
   active = false;
 }
 
