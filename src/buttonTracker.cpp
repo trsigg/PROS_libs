@@ -2,6 +2,8 @@
 #include <API.h>
 #include <cmath>
 
+bool* ButtonTracker::pressedButtons[NUM_JOYSTICKS][4][4];
+
 bool ButtonTracker::isValidButton(unsigned char buttonGroup, unsigned char button, unsigned char joystick) {
 	//possible debug location
 	return (joystick<=NUM_JOYSTICKS)
