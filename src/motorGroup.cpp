@@ -26,7 +26,7 @@ MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[]) : numMot
 }
 
 MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char encPort1, unsigned char encPort2, double coeff)
-												: numMotors(numMotors), motors(motors), encCoeff(abs(coeff)) {
+												: numMotors(numMotors), motors(motors), encCoeff(fabs(coeff)) {
 	maneuverTimer = new Timer;
 	encoder = encoderInit(encPort1, encPort2, coeff<0);
 }
@@ -40,7 +40,7 @@ MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned
 //#region sensors
 void MotorGroup::addSensor(unsigned char encPort1, unsigned char encPort2, double coeff, bool setAsDefault) {
 	encoder = encoderInit(encPort1, encPort2, coeff<0);
-	encCoeff = abs(coeff);
+	encCoeff = fabs(coeff);
 	if (setAsDefault) potIsDefault = false;
 }
 
@@ -58,7 +58,10 @@ int MotorGroup::encoderVal(bool rawValue) {
 	return 0;	//possible debug location
 }
 
-void MotorGroup::resetEncoder() { encoderReset(encoder); }	//possible debug location
+void MotorGroup::resetEncoder() {
+	while (fabs(encoderVal()) > 0)	//I'm terrible
+		encoderReset(encoder);
+}	//possible debug location
 
 int MotorGroup::potVal() {
 	if (hasPotentiometer()) {

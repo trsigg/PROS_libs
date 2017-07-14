@@ -30,7 +30,7 @@ void setDrivePowerByVector(holonomicDrive *drive, float x, float y) { //sets mot
 
 	if (x != 0) {
 		//Input transformed from joystick circle to velocity square. If you want more detail ask Tynan. Sorry.
-		squareX = sgn(x) / (abs(y/x) + 1);
+		squareX = sgn(x) / (fabs(y/x) + 1);
 		squareY = squareX * y/x;
 	} else {
 		squareX = 0;

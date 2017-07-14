@@ -31,10 +31,10 @@ void ParallelDrive::setDrivePower(char left, char right) {
 //#region constructors
 ParallelDrive::ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR, unsigned char leftMotors[], unsigned char rightMotors[], unsigned char lEncPort1, unsigned char lEncPort2, bool lReversed, unsigned char rEncPort1, unsigned char rEncPort2, bool rReversed, double wheelDiameter, double gearRatio)
                               : wheelDiameter(wheelDiameter) {
-  double coeff = PI * wheelDiameter * gearRatio / 360;
+  double coeff = PI * wheelDiameter * gearRatio / 360.0;
 
-  leftDrive = new JoystickGroup(numMotorsL, leftMotors, lEncPort1, lEncPort2, coeff * (lReversed ? -1 : 1));
-  rightDrive = new JoystickGroup(numMotorsR, rightMotors, rEncPort1, rEncPort2, coeff * (rReversed ? -1 : 1));
+  leftDrive = new JoystickGroup(numMotorsL, leftMotors, lEncPort1, lEncPort2, coeff * (lReversed ? -1.0 : 1.0));
+  rightDrive = new JoystickGroup(numMotorsR, rightMotors, rEncPort1, rEncPort2, coeff * (rReversed ? -1.0 : 1.0));
   updateEncConfig();
 
   initializeDefaults();
@@ -82,9 +82,11 @@ void ParallelDrive::addSensor(unsigned char encPort1, unsigned char encPort2, bo
     } else {
       wheelDiameter = 3.25; //possible debug location
     }
+  } else {
+    this->wheelDiameter = wheelDiameter;
   }
 
-  double coeff = PI * wheelDiameter * gearRatio / 360 * (reversed ? -1 : 1);
+  double coeff = PI * wheelDiameter * gearRatio / 360.0 * (reversed ? -1.0 : 1.0);
 
   if (side == LEFT) {
     leftDrive->addSensor(encPort1, encPort2, coeff);
@@ -110,7 +112,7 @@ double ParallelDrive::encoderVal(encoderConfig side, bool rawValue, bool absolut
 
 	if (side == AVERAGE) {
 		if (absolute) {
-			return (abs(encoderVal(LEFT, rawValue)) + abs(encoderVal(RIGHT, rawValue))) / 2;
+			return (fabs(encoderVal(LEFT, rawValue)) + fabs(encoderVal(RIGHT, rawValue))) / 2;
 		} else {
 			return (encoderVal(LEFT, rawValue) + encoderVal(RIGHT, rawValue)) / 2;
 		}
@@ -205,7 +207,7 @@ double ParallelDrive::calculateWidth(unsigned short duration, unsigned short sam
 				resetGyro();
 				delay(sampleTime);
 
-				totalWidth += abs(encoderVal() / gyroVal(RADIANS));
+				totalWidth += fabs(encoderVal() / gyroVal(RADIANS));
 				samples++;
 			}
 		}
@@ -220,7 +222,7 @@ double ParallelDrive::calculateWidth(unsigned short duration, unsigned short sam
 void ParallelDrive::turn(double angle, bool runAsManeuver, double in1, double in2, double in3, angleType format, unsigned short waitAtEnd, unsigned short sampleTime, char brakePower, unsigned short brakeDuration, bool useGyro) {
   //initialize variables
 	double formattedAngle = convertAngle(angle, format, DEGREES);
-	target = (useGyro ? formattedAngle : PI*width*formattedAngle/360);
+	target = (useGyro ? formattedAngle : PI*width*formattedAngle/360.0);
 	finalDelay = waitAtEnd;
   this->sampleTime = sampleTime;
 	brakeDelay = brakeDuration;
@@ -235,7 +237,7 @@ void ParallelDrive::turn(double angle, bool runAsManeuver, double in1, double in
 	resetGyro();
 
 	if (!runAsManeuver) {
-		while (maneuverProgress() < target)
+		while (isTurning)
 			executeManeuver();
 	}
 }
@@ -274,19 +276,20 @@ void ParallelDrive::drive(double dist, bool runAsManeuver, double in1, double in
   timeoutTracker->reset();
 
   if (!runAsManeuver) {
-    while (maneuverProgress() < target)
+    while (isDriving)
       executeManeuver();
   }
 }
 
 void ParallelDrive::executeManeuver() {
   if (isDriving && sampleTimer->time() > sampleTime) {  //driving
-    if (maneuverProgress() < abs(target)) {
-      leftDist += abs(encoderVal(LEFT, rawValue));
-  	  rightDist += abs(encoderVal(RIGHT, rawValue));
+    if (maneuverProgress() < fabs(target)) {
+      leftDist += fabs(encoderVal(LEFT, rawValue));
+  	  rightDist += fabs(encoderVal(RIGHT, rawValue));
   	  totalDist = (leftDist + rightDist) / 2;
 
       if (encoderVal() > minDiffPerSample) timeoutTracker->reset(); //track timeout state
+      sampleTimer->reset();
 
       resetEncoders();
 
@@ -326,7 +329,7 @@ void ParallelDrive::executeManeuver() {
     	isDriving = false;
     }
   } else if (isTurning) { //turning
-    if (maneuverProgress() < abs(target)) {
+    if (maneuverProgress() < fabs(target)) {
       char power = ramp->evaluate(maneuverProgress());
 
       setDrivePower(sgn(target)*power, -sgn(target)*power);
@@ -337,7 +340,7 @@ void ParallelDrive::executeManeuver() {
       setDrivePower(0, 0);
 
       delay(finalDelay);
-      isDriving = false;
+      isTurning = false;
     }
   }
 }
@@ -347,7 +350,7 @@ double ParallelDrive::maneuverProgress(angleType format) {
     return totalDist;
   } else if (isTurning) {
     if (usingGyro)
-      return abs(gyroVal(format));
+      return fabs(gyroVal(format));
     else
       return encoderVal();
   }
@@ -414,7 +417,7 @@ double ParallelDrive::theta(angleType format) { return convertAngle(orientation,
 void ParallelDrive::setCorrectionType(correctionType type) {
   if (type==GYRO && hasGyro()) {
 		correction = GYRO;
-		while (abs(gyroVal()) > 10) resetGyro(); //I'm horrible, I know (this is here so gyro is only reset when correcting with it)
+		while (fabs(gyroVal()) > 1) resetGyro(); //I'm horrible, I know (this is here so gyro is only reset when correcting with it)
 	} else if (type==ENCODER && leftDrive->hasEncoder() && rightDrive->hasEncoder()) {
 		correction = ENCODER;
 	} else {

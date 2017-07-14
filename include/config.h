@@ -30,8 +30,8 @@
   #define FLAPPER_POT  1
   //drive
   #define HYRO        5
-  #define RIGHT_ENC   3, 4, false
-  #define LEFT_ENC    1, 2, false
+  #define RIGHT_ENC   4, 3, false
+  #define LEFT_ENC    2, 1, false
   //#endsubregion
   //#subregion buttons
   //flapper

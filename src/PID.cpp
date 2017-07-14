@@ -10,7 +10,7 @@ double PID::evaluate(double input) {
 		double error = target - input;
 		unsigned short timeCorrectionFactor = useTimeAdjustment ? elapsed : 1;
 
-		integral += (integralMax!=0 && std::abs(error)>integralMax) ? error : copysign(integralMax, error);
+		integral += (integralMax!=0 && fabs(error)>integralMax) ? error : copysign(integralMax, error);
 		//adds error if |error| < integralMax, otherwise add integralMax*sgn(error)
 
 		prevOutput = kP*error + kI*integral*timeCorrectionFactor + kD*(error - prevError)/timeCorrectionFactor;
@@ -32,7 +32,7 @@ void PID::changeTarget(double target) {
 }
 
 PID::PID(double target, double kP, double kI, double kD, unsigned short minSampleTime, double integralMax, bool useTimeAdjustment)
-					: target(target), kP(kP), kI(kI), kD(kD), minSampleTime(minSampleTime), integralMax(std::abs(integralMax)), useTimeAdjustment(useTimeAdjustment) {
+					: target(target), kP(kP), kI(kI), kD(kD), minSampleTime(minSampleTime), integralMax(fabs(integralMax)), useTimeAdjustment(useTimeAdjustment) {
 	integral = 0;
 	prevError = 0;
 	updateTimer = new Timer();

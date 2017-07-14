@@ -24,5 +24,5 @@ char sgn(double x) {
 	if (x == 0)
 		return 0;
 	else
-		return std::abs(x) / x;
+		return fabs(x) / x;
 }
