@@ -37,6 +37,10 @@ ParallelDrive::ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR,
   rightDrive = new JoystickGroup(numMotorsR, rightMotors, rEncPort1, rEncPort2, coeff * (rReversed ? -1.0 : 1.0));
   updateEncConfig();
 
+  positionTimer = new Timer;
+  sampleTimer = new Timer;
+  timeoutTracker = new Timer;
+
   initializeDefaults();
 }
 
@@ -46,6 +50,10 @@ ParallelDrive::ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR,
 
   configureTankInput(coeff, powMap, maxAcc100ms, deadband, leftAxis, rightAxis, joystick);
 
+  positionTimer = new Timer;
+  sampleTimer = new Timer;
+  timeoutTracker = new Timer;
+
   initializeDefaults();
 }
 
@@ -54,6 +62,10 @@ ParallelDrive::ParallelDrive(unsigned char movementAxis, unsigned char turningAx
   rightDrive = new JoystickGroup(numMotorsR, rightMotors);
 
   configureArcadeInput(movementAxis, turningAxis, coeff);
+
+  positionTimer = new Timer;
+  sampleTimer = new Timer;
+  timeoutTracker = new Timer;
 
   initializeDefaults();
 }

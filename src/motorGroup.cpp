@@ -33,7 +33,7 @@ MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned
 
 MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned char potPort, bool potReversed)
 												: numMotors(numMotors), motors(motors), potPort(potPort), potReversed(potReversed) {
-	maneuverTimer = new Timer();
+	maneuverTimer = new Timer;
 }
 //#endregion
 
