@@ -21,9 +21,9 @@
   //initializer lists of motor ports (mps = motor ports)
   //drive
   #define LD_MPS  { 1 }   //left
-  #define RD_MPS  { 9 }  //right
+  #define RD_MPS  { 2 }  //right
   //flapper
-  #define FLAPPER_MPS  { 10 }
+  #define FLAPPER_MPS  { 3 }
   //#endsubregion
   //#subregion sensors
   //flapper

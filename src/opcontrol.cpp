@@ -10,7 +10,7 @@ void operatorControl() {
 		if (joystickGetDigital(1, 7, JOY_UP)) {
 			printf("%f\n", drive.encoderVal());
 			print("Driving...\n");
-			drive.drive(100);
+			drive.drive(20);	//100
 			print("Finished.\n");
 		}
 
