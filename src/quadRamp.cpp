@@ -2,7 +2,7 @@
 #include "coreIncludes.h" //also includes cmath
 
 QuadRamp::QuadRamp(float target, float initial, float maximum, float end) {
-  a = (pow(target, 2) * (end+initial-2*maximum) - 2*sqrt(pow(target, 4) * (end-maximum) * (initial-maximum))) / pow(target, 4);
+  a = ((end + initial - 2*maximum) - 2*sqrt((end-maximum) * (initial-maximum))) / pow(target, 2);
 	b = ((end-initial)/target - a*target) * sgn(target);
   c = initial;
 }

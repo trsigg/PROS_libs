@@ -39,7 +39,7 @@ ParallelDrive::ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR,
 
   positionTimer = new Timer;
   sampleTimer = new Timer;
-  timeoutTracker = new Timer;
+  moveTimer = new Timer;
 
   initializeDefaults();
 }
@@ -52,7 +52,7 @@ ParallelDrive::ParallelDrive(unsigned char numMotorsL, unsigned char numMotorsR,
 
   positionTimer = new Timer;
   sampleTimer = new Timer;
-  timeoutTracker = new Timer;
+  moveTimer = new Timer;
 
   initializeDefaults();
 }
@@ -65,7 +65,7 @@ ParallelDrive::ParallelDrive(unsigned char movementAxis, unsigned char turningAx
 
   positionTimer = new Timer;
   sampleTimer = new Timer;
-  timeoutTracker = new Timer;
+  moveTimer = new Timer;
 
   initializeDefaults();
 }
@@ -231,20 +231,27 @@ double ParallelDrive::calculateWidth(unsigned short duration, unsigned short sam
 //#endregion
 
 //#region automovement
-void ParallelDrive::turn(double angle, bool runAsManeuver, double in1, double in2, double in3, angleType format, unsigned short waitAtEnd, unsigned short sampleTime, char brakePower, unsigned short brakeDuration, bool useGyro) {
+void ParallelDrive::turn(double angle, bool runAsManeuver, double rc1, double rc2, double rc3, double rc4, double rc5, angleType format, unsigned short waitAtEnd, unsigned short sampleTime, char brakePower, unsigned short brakeDuration, bool useGyro) {
   //initialize variables
+  if (reverseTurns) angle *= -1;
 	double formattedAngle = convertAngle(angle, format, DEGREES);
-	target = (useGyro ? formattedAngle : PI*width*formattedAngle/360.0);
+	target = (useGyro ? formattedAngle : formattedAngle*PI*width/180.0/wheelDiameter); //possible debug location (if not all variables are initialized)
 	finalDelay = waitAtEnd;
   this->sampleTime = sampleTime;
 	brakeDelay = brakeDuration;
 	usingGyro = useGyro;
 	isTurning = true;
 
-  if (in1 == 0)
-    ramp = new PID(target, in2, 0, in3);
-  else
-    ramp = new QuadRamp(target, in1, in2, in3);
+  if (rc4 == 0) {
+    ramp = new QuadRamp(target, rc1, rc2, rc3);
+    quadRamping = true;
+  } else {
+    ramp = new PID(target, rc1, rc5, rc2);
+    margin = convertAngle(rc3, format, DEGREES);
+    timeout = rc4;
+    quadRamping = false;
+    maneuverTimer->reset();
+  }
 
 	resetGyro();
 
@@ -254,12 +261,12 @@ void ParallelDrive::turn(double angle, bool runAsManeuver, double in1, double in
 	}
 }
 
-void ParallelDrive::drive(double dist, bool runAsManeuver, double in1, double in2, double in3, unsigned short waitAtEnd, double kP, double kI, double kD, correctionType correction, bool rawValue, double minSpeed, unsigned short timeout, char brakePower, unsigned short brakeDuration, unsigned short sampleTime) {
+void ParallelDrive::drive(double dist, bool runAsManeuver, double rc1, double rc2, double rc3, double rc4, double rc5, unsigned short waitAtEnd, double kP, double kI, double kD, correctionType correction, bool rawValue, double minSpeed, unsigned short moveTimeout, char brakePower, unsigned short brakeDuration, unsigned short sampleTime) {
   //initialize variables
 	target = dist;
 	this->rawValue = rawValue;
-	minDiffPerSample = minSpeed * sampleTime / 1000;
-	this->timeout = timeout;
+	minSpeed = minSpeed * sampleTime / 1000;
+	this->moveTimeout = moveTimeout;
   brakeDelay = limit(0, brakeDuration, waitAtEnd);
 	finalDelay = waitAtEnd - brakeDuration;
 	this->sampleTime = sampleTime;
@@ -270,10 +277,16 @@ void ParallelDrive::drive(double dist, bool runAsManeuver, double in1, double in
 	rightDist = 0;
 	totalDist = 0;
 
-  if (in1 == 0)
-    ramp = new PID(target, in2, 0, in3);
-  else
-    ramp = new QuadRamp(target, in1, in2, in3);
+  if (rc4 == 0) {
+    ramp = new QuadRamp(target, rc1, rc2, rc3);
+    quadRamping = true;
+  } else {
+    ramp = new PID(target, rc1, rc5, rc2);
+    margin = rc3;
+    timeout = rc4;
+    quadRamping = false;
+    maneuverTimer->reset();
+  }
 
   if (correction == NONE)
     setCorrectionType(NONE);
@@ -285,7 +298,7 @@ void ParallelDrive::drive(double dist, bool runAsManeuver, double in1, double in
 	//initialize sensors
 	resetEncoders();
 	sampleTimer->reset();
-  timeoutTracker->reset();
+  moveTimer->reset();
 
   if (!runAsManeuver) {
     while (isDriving)
@@ -293,15 +306,22 @@ void ParallelDrive::drive(double dist, bool runAsManeuver, double in1, double in
   }
 }
 
-void ParallelDrive::executeManeuver() {
-  if (isDriving && sampleTimer->time() > sampleTime) {  //driving
-    if (maneuverProgress() < fabs(target)) {
+void ParallelDrive::executeManeuver() { //TODO: break up into smaller functions
+  if (isDriving && sampleTimer->time() >= sampleTime) {  //driving
+    if (moveTimer->time() >= moveTimeout) {  //timed out due to lack of movement
+      setDrivePower(0, 0);
+      isDriving = false;
+    }
+    else if (!maneuverFinished()) {  //continue driving
+      //update distances
       leftDist += fabs(encoderVal(LEFT, rawValue));
   	  rightDist += fabs(encoderVal(RIGHT, rawValue));
   	  totalDist = (leftDist + rightDist) / 2;
 
-      if (encoderVal() > minDiffPerSample) timeoutTracker->reset(); //track timeout state
+      //update timers
       sampleTimer->reset();
+      if (encoderVal() >= minSpeed) moveTimer->reset();
+      if (!quadRamping && fabs(totalDist - target) > margin) maneuverTimer->reset();
 
       resetEncoders();
 
@@ -331,28 +351,38 @@ void ParallelDrive::executeManeuver() {
       }
 
       setDrivePower(sgn(target)*leftPower, sgn(target)*rightPower);
-    } else {  //end maneuver - TAKES TIME! Expect a delay unless this is wrapped in a task
-      //brake
-    	setDrivePower(-sgn(target)*brakePower, -sgn(target)*brakePower);
-    	delay(brakeDelay);
-    	setDrivePower(0, 0);
+    }
+    else {  //end maneuver - TAKES TIME! Expect a delay unless this is wrapped in a task
+      if (quadRamping) {  //brake
+      	setDrivePower(-sgn(target)*brakePower, -sgn(target)*brakePower);
+      	delay(brakeDelay);
+      }
 
+      setDrivePower(0, 0);
     	delay(finalDelay);
     	isDriving = false;
     }
-  } else if (isTurning) { //turning
-    if (maneuverProgress() < fabs(target)) {
-      char power = ramp->evaluate(maneuverProgress());
+  }
+  else if (isTurning) { //turning
+    if (!maneuverFinished()) {
+      double progress = maneuverProgress();
+
+      if (!quadRamping && fabs(progress - target) > margin) //track timeout state
+        maneuverTimer->reset();
+
+      char power = ramp->evaluate(progress);
 
       setDrivePower(sgn(target)*power, -sgn(target)*power);
-    } else {  //end maneuver - TAKES TIME! Expect a delay unless this is wrapped in a task
-      //brake
-      setDrivePower(-sgn(target)*brakePower, sgn(target)*brakePower);
-      delay(brakeDelay);
-      setDrivePower(0, 0);
+    }
+    else {  //end maneuver - TAKES TIME! Expect a delay unless this is wrapped in a task
+      if (quadRamping) {  //brake
+      	setDrivePower(-sgn(target)*brakePower, sgn(target)*brakePower);
+      	delay(brakeDelay);
+      }
 
-      delay(finalDelay);
-      isTurning = false;
+      setDrivePower(0, 0);
+    	delay(finalDelay);
+    	isTurning = false;
     }
   }
 }
@@ -364,10 +394,15 @@ double ParallelDrive::maneuverProgress(angleType format) {
     if (usingGyro)
       return fabs(gyroVal(format));
     else
-      return encoderVal();
+      return convertAngle(encoderVal()*PI*width/180.0/wheelDiameter, DEGREES, format);
   }
 
   return 0;
+}
+
+bool ParallelDrive::maneuverFinished() {
+  return (quadRamping && maneuverProgress() >= fabs(target))
+          || (!quadRamping && maneuverTimer->time() >= timeout);
 }
 
 bool ParallelDrive::maneuverExecuting() {
@@ -378,29 +413,33 @@ void ParallelDrive::initializeDefaults() {
   //turning
   tDefs.defAngleType = DEGREES;
   tDefs.useGyro = true;
-  tDefs.brakePower = 20;
+  tDefs.brakePower = 15;
   tDefs.waitAtEnd = 100;
   tDefs.sampleTime = 30;
   tDefs.brakeDuration = 100;
-  tDefs.rampConst1 = 50;
-  tDefs.rampConst2 = 127;
-  tDefs.rampConst3 = -15;
+  tDefs.rampConst1 = 40;		// initialPower/kP
+	tDefs.rampConst2 = 127;		// maxPower/kD
+	tDefs.rampConst3 = -30;		// finalPower/error
+	tDefs.rampConst4 = 0;			// 0/pd timeout
+	tDefs.rampConst5 = 0.005;	// irrelevant/kI
 
   //driving
   dDefs.defCorrectionType = AUTO;
   dDefs.rawValue = false;
-  dDefs.brakePower = 40;
+  dDefs.brakePower = 30;
   dDefs.waitAtEnd = 100;
   dDefs.sampleTime = 50;
   dDefs.brakeDuration = 100;
-  dDefs.timeout = 1000;
-  dDefs.rampConst1 = 40;
-  dDefs.rampConst2 = 120;
-  dDefs.rampConst3 = -15;
-  dDefs.kP_c = 0.25;
-  dDefs.kI_c = 0.25;
-  dDefs.kD_c = 0.25;
-  dDefs.minDiffPerSample = 5;
+  dDefs.moveTimeout = 1000;
+  dDefs.rampConst1 = 50;	//same as above
+	dDefs.rampConst2 = 120;
+	dDefs.rampConst3 = -20;
+	dDefs.rampConst4 = 0;
+	dDefs.rampConst5 = 0.05;
+  dDefs.kP_c = 0.55;
+  dDefs.kI_c = 0.007;
+  dDefs.kD_c = 0.15;
+  dDefs.minSpeed = 10;
 }
 //#endregion
 
@@ -436,5 +475,7 @@ void ParallelDrive::setCorrectionType(correctionType type) {
 		correction = NONE;
 	}
 }
+
+void ParallelDrive::setTurnReversal(bool reversed) {  reverseTurns = reversed;  }
   //#endsubregion
 //#endregion

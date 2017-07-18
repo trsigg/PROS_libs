@@ -40,18 +40,18 @@ struct TurnDefaults {
   bool useGyro;
   char brakePower;
   unsigned short waitAtEnd, sampleTime, brakeDuration;
-  double rampConst1, rampConst2, rampConst3;  //initialPower/0; maxPower/kP; finalPower/kD
+  double rampConst1, rampConst2, rampConst3, rampConst4, rampConst5;  // initialPower/kP, maxPower/kD, finalPower/error, 0/maneuver timeout, irrelevant/kI
 };
 extern TurnDefaults tDefs;
 
 struct DriveDefaults {
   correctionType defCorrectionType;
-  bool rawValue;                             //whether to use encoder clicks (as opposed to inches)
+  bool rawValue;            //whether to use encoder clicks (as opposed to inches)
   char brakePower;
-  unsigned short waitAtEnd, sampleTime, brakeDuration, timeout;
-  double rampConst1, rampConst2, rampConst3; //same as turn
-  double kP_c, kI_c, kD_c;                   //correction PID constants
-  double minDiffPerSample;                           //minimum speed (inches or clicks per second) which will not trigger a timeout
+  unsigned short waitAtEnd, sampleTime, brakeDuration, moveTimeout;
+  double rampConst1, rampConst2, rampConst3, rampConst4, rampConst5; //same as turn
+  double kP_c, kI_c, kD_c;  //correction PID constants
+  double minSpeed;  //minimum speed (inches or clicks per second) which will not trigger a move timeout
 };
 extern DriveDefaults dDefs;
 //#endregion
@@ -97,10 +97,9 @@ class ParallelDrive {
         which samples are not taken as drive changes spinning direction. */
     //#endregion
     //#region automovement
-    void turn(double angle, bool runAsManeuver=false, double in1=tDefs.rampConst1, double in2=tDefs.rampConst2, double in3=tDefs.rampConst3, angleType format=tDefs.defAngleType, unsigned short waitAtEnd=tDefs.waitAtEnd, unsigned short sampleTime=tDefs.sampleTime, char brakePower=tDefs.brakePower, unsigned short brakeDuration=tDefs.brakeDuration, bool useGyro=tDefs.useGyro);
-    void drive(double dist, bool runAsManeuver=false, double in1=dDefs.rampConst1, double in2=dDefs.rampConst2, double in3=dDefs.rampConst3, unsigned short waitAtEnd=dDefs.waitAtEnd, double kP=dDefs.kP_c, double kI=dDefs.kI_c, double kD=dDefs.kD_c, correctionType correction=dDefs.defCorrectionType, bool rawValue=dDefs.rawValue, double minSpeed=dDefs.minDiffPerSample, unsigned short timeout=dDefs.timeout, char brakePower=dDefs.brakePower, unsigned short brakeDuration=dDefs.brakeDuration, unsigned short sampleTime=dDefs.sampleTime);
-    /* For quad-ramped movement, in1=initial power, in2=maxPower, and
-        in3=finalPower. For PD-ramped movement, in1=0, in2=kP, and in3=kD. */
+    void turn(double angle, bool runAsManeuver=false, double rc1=tDefs.rampConst1, double rc2=tDefs.rampConst2, double rc3=tDefs.rampConst3, double rc4=tDefs.rampConst4, double rc5=tDefs.rampConst5, angleType format=tDefs.defAngleType, unsigned short waitAtEnd=tDefs.waitAtEnd, unsigned short sampleTime=tDefs.sampleTime, char brakePower=tDefs.brakePower, unsigned short brakeDuration=tDefs.brakeDuration, bool useGyro=tDefs.useGyro);
+    void drive(double dist, bool runAsManeuver=false, double rc1=dDefs.rampConst1, double rc2=dDefs.rampConst2, double rc3=dDefs.rampConst3, double rc4=dDefs.rampConst4, double rc5=dDefs.rampConst5, unsigned short waitAtEnd=dDefs.waitAtEnd, double kP=dDefs.kP_c, double kI=dDefs.kI_c, double kD=dDefs.kD_c, correctionType correction=dDefs.defCorrectionType, bool rawValue=dDefs.rawValue, double minSpeed=dDefs.minSpeed, unsigned short moveTimeout=dDefs.moveTimeout, char brakePower=dDefs.brakePower, unsigned short brakeDuration=dDefs.brakeDuration, unsigned short sampleTime=dDefs.sampleTime);
+    /* rc args explained in turnDefaults definition */
     void executeManeuver();                             //executes turn and drive maneuvers
     double maneuverProgress(angleType format=DEGREES);  //returns absolute value odistance traveled or angle turned while maneuver is in progress
     bool maneuverExecuting();
@@ -118,6 +117,7 @@ class ParallelDrive {
       //#endsubregion
       //#subregion autonomous
     void setCorrectionType(correctionType type);
+    void setTurnReversal(bool reversed);
       //#endsubregion
     //#endregion
   private:
@@ -148,21 +148,33 @@ class ParallelDrive {
     Ramper* ramp;    //controls motor power ramping during maneuver
     unsigned short finalDelay, sampleTime, brakeDelay;
     char brakePower;
+      //#subregion termination conditions
+    bool maneuverFinished();
+    /* Checks if termination conditions are met based on current robot state.
+        Not to be confused with maneuverExecuting(), which simply checks
+        isTurning and isDriving. */
+    bool quadRamping; //if this is true, maneuver will terminate once progress surpasses <target>
+                      //if it is false, maneuver will terminate once <maneuverTimer> surpasses <timeout>
+    Timer* maneuverTimer; //tracks how long robot has been within <margin> of <target>
+    unsigned short timeout;
+    double margin;
+      //#endsubregion
       //#subregion turning
     bool isTurning;
     angleType format;
+    bool reverseTurns;
     bool usingGyro;
       //#endsubregion
       //#subregion driving
     bool isDriving;
     bool rawValue;
-    double minDiffPerSample;
-    unsigned short timeout;
+    double minSpeed;
+    unsigned short moveTimeout; //amount of time with no movement after which a maneuver will terminate
     correctionType correction;
     PID* correctionPID;
     double leftDist, rightDist, totalDist;
     Timer* sampleTimer;
-    Timer* timeoutTracker;
+    Timer* moveTimer;
       //#endsubregion
     //#endregion
 };

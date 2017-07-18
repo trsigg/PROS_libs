@@ -18,10 +18,10 @@ char JoystickGroup::takeInput() {
   		int elapsed = now - lastUpdated;
   		char currentPower = getPower();
 
-  		if (elapsed > msPerPowerChange) {
+  		if (elapsed >= msPerPowerChange) {
 				lastUpdated = now;
 
-				if (abs(power) > abs(currentPower)) {	//only ramp up in absolute value
+				if (abs(power) > abs(currentPower)) {	//only ramp up in absolute value (TODO: add option to ramp both directions?)
 					char maxDiff = elapsed / msPerPowerChange;
 
 					if (abs(currentPower - power) > maxDiff) {
@@ -88,7 +88,7 @@ void JoystickGroup::startRamping() {
   ramping = true;
 
   if (msPerPowerChange == 0) {
-    msPerPowerChange = 10;
+    msPerPowerChange = 10;	//possible debug location
   }
 
   lastUpdated = millis();

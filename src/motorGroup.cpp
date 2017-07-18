@@ -41,6 +41,7 @@ MotorGroup::MotorGroup(unsigned char numMotors, unsigned char motors[], unsigned
 void MotorGroup::addSensor(unsigned char encPort1, unsigned char encPort2, double coeff, bool setAsDefault) {
 	encoder = encoderInit(encPort1, encPort2, coeff<0);
 	encCoeff = fabs(coeff);
+	encoderReset(encoder);
 	if (setAsDefault) potIsDefault = false;
 }
 
@@ -117,19 +118,23 @@ void MotorGroup::goToPosition(int pos, bool runAsManeuver, char endPower, char m
 }
 
 	//#subregion position targeting
-void MotorGroup::setPosPIDconsts(double kP, double kI, double kD) {
-	targetPosPID = new PID(0, kP, kI, kD);
+void MotorGroup::posPIDinit(double kP, double kI, double kD, unsigned short minSampleTime, double integralMax, bool useTimeAdjustment) {
+	posPID = new PID(0, kP, kI, kD, minSampleTime, integralMax, useTimeAdjustment);
 }
 
 void MotorGroup::setTargetPosition(int position) {
-	targetPosPID->changeTarget(position);
+	posPID->changeTarget(position);
 	targetingActive = true;
 }
 
 void MotorGroup::maintainTargetPos() {
-	if (targetingActive && targetPosPID) {
-		setPower(targetPosPID->evaluate(getPosition()));
+	if (targetingActive && posPID) {
+		setPower(posPID->evaluate(getPosition()));
 	}
+}
+
+bool MotorGroup::errorLessThan(int margin) {
+	return abs(posPID->getTarget() - getPosition()) < margin;
 }
 	//#endsubregion
 //#endregion

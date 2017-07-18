@@ -35,9 +35,10 @@ class MotorGroup {
     void stopManeuver();
     void executeManeuver();                                                                                              //moves group toward target and updates maneuver progress
       //position targeting
-    void setPosPIDconsts(double kP, double kI, double kD);  //sets PID constants used for maintaining target position
-    void setTargetPosition(int position);                   //sets target and activates position targeting
-    void maintainTargetPos();																//moves toward or tries to maintain target position. setPosPIDconsts() must have been called prior to this funciton
+    void posPIDinit(double kP, double kI, double kD, unsigned short minSampleTime=30, double integralMax=0, bool useTimeAdjustment=false);  //sets PID constants used for maintaining target position
+    void setTargetPosition(int position); //sets target and activates position targeting
+    void maintainTargetPos();							//moves toward or tries to maintain target position. posPIDinit() must have been called prior to this funciton
+    bool errorLessThan(int margin);       //returns true if PID error < margin
     //accessors and mutators
       //sensors
     bool isPotReversed();       //returns false if no potentiometer is attached
@@ -77,7 +78,7 @@ class MotorGroup {
     bool maneuverExecuting;         //whether a maneuver is currently in progress
     Timer* maneuverTimer;           //tracks timeout state of maneuvers
 		//position targeting
-		PID* targetPosPID;
+		PID* posPID;
     bool targetingActive;
     //sensors
     Encoder encoder;

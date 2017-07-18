@@ -10,10 +10,11 @@ double PID::evaluate(double input) {
 		double error = target - input;
 		unsigned short timeCorrectionFactor = useTimeAdjustment ? elapsed : 1;
 
-		integral += (integralMax!=0 && fabs(error)>integralMax) ? error : copysign(integralMax, error);
-		//adds error if |error| < integralMax, otherwise add integralMax*sgn(error)
+		integral += kI * (integralMax!=0 && fabs(error)>integralMax) ? error : copysign(integralMax, error);	//TODO: should this compare error or output to integralMax?
+		/* Adds error if |error| < integralMax, otherwise add integralMax*sgn(error)
+				kI is factored in here to avoid problems when changing gain coeffs. */
 
-		prevOutput = kP*error + kI*integral*timeCorrectionFactor + kD*(error - prevError)/timeCorrectionFactor;
+		prevOutput = kP*error + integral*timeCorrectionFactor + kD*(error - prevError)/timeCorrectionFactor;
 		prevError = error;
 	}
 
@@ -28,7 +29,7 @@ void PID::reset() {
 
 void PID::changeTarget(double target) {
 	this->target = target;
-	reset();
+	reset();	//TODO: add options?
 }
 
 PID::PID(double target, double kP, double kI, double kD, unsigned short minSampleTime, double integralMax, bool useTimeAdjustment)
@@ -53,5 +54,5 @@ void PID::setIntegral(double integral) { this->integral = integral; }
 unsigned short PID::getMinSampleTime() { return minSampleTime; }
 void PID::setMinSampleTime(unsigned short minSampleTime) { this->minSampleTime = minSampleTime; }
 double PID::getIntegralMax() { return integralMax; }
-void PID::setIntegralMax(double max) { this->integralMax = integralMax; }
+void PID::setIntegralMax(double max) { integralMax = max; }
 //#endregion
