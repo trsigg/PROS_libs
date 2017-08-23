@@ -2,7 +2,7 @@
 #include <API.h>
 #include <cmath>
 
-bool* ButtonTracker::pressedButtons[NUM_JOYSTICKS][4][4];
+bool ButtonTracker::pressedButtons[NUM_JOYSTICKS][4][4];
 
 bool ButtonTracker::isValidButton(unsigned char buttonGroup, unsigned char button, unsigned char joystick) {
 	//possible debug location
@@ -14,7 +14,7 @@ bool ButtonTracker::isValidButton(unsigned char buttonGroup, unsigned char butto
 
 bool* ButtonTracker::getButtonPtr(unsigned char buttonGroup, unsigned char button, unsigned char joystick) {
 	if (isValidButton(joystick, buttonGroup, button))
-		return pressedButtons[joystick-1][buttonGroup-5][(int)log2(button)];
+		return pressedButtons[joystick-1][buttonGroup-5] + (int) log2(button);
 		//log2 necessary because button identifiers correspond to 1, 2, 4, and 8
 	else
 		return 0;	//TODO: be better than this
@@ -23,9 +23,9 @@ bool* ButtonTracker::getButtonPtr(unsigned char buttonGroup, unsigned char butto
 bool ButtonTracker::newlyPressed(unsigned char buttonGroup, unsigned char button, unsigned char joystick) {
 	bool retVal = false;	//value to be returned
 
-	if (isValidButton(joystick, buttonGroup, button)) {
+	if (isValidButton(buttonGroup, button, joystick)) {
 		bool newState = joystickGetDigital(joystick, buttonGroup, button);
-		bool* oldStatePtr = getButtonPtr(joystick, buttonGroup, button);
+		bool* oldStatePtr = getButtonPtr(buttonGroup, button, joystick);
 
 		retVal = newState && !*oldStatePtr;	//(is pressed now) && (was not pressed at last update)
 		*oldStatePtr = newState;

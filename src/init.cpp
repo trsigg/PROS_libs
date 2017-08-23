@@ -10,11 +10,14 @@ void initializeIO() {
 }
 
 void initialize() {
-  //#region sensor configuration
+  //#region sensor config
   drive.addSensor(HYRO);
   drive.addSensor(LEFT_ENC, LEFT, WHEEL_DIAMETER);
   drive.addSensor(RIGHT_ENC, RIGHT);
 
   flapper.addSensor(FLAPPER_POT);
+  //#endregion
+  //#region PID config
+  flapper.posPIDinit(0.2, 0.001, 0.03);
   //#endregion
 }

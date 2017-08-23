@@ -16,7 +16,7 @@ class ButtonTracker {
       Checks that joystick <= NUM_JOYSTICKS (defined in config.h) and that buttonGroup
       and button correspond to a real button (i.e. allows 5U and 7R but not 9U or 6R) */
   private:
-    static bool* pressedButtons[NUM_JOYSTICKS][4][4];
+    static bool pressedButtons[][4][4];
     /* Holds the states of the buttons at last update */
     static bool* getButtonPtr(unsigned char buttonGroup, unsigned char button, unsigned char joystick=1);
     /* Returns a pointer to the location in pressedButtons holding the state of the specified button */
