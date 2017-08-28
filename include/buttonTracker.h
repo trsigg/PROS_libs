@@ -18,8 +18,6 @@ class ButtonTracker {
   private:
     static bool pressedButtons[][4][4];
     /* Holds the states of the buttons at last update */
-    static bool* getButtonPtr(unsigned char buttonGroup, unsigned char button, unsigned char joystick=1);
-    /* Returns a pointer to the location in pressedButtons holding the state of the specified button */
 };
 
 #endif
